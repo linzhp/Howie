@@ -2,9 +2,9 @@
  - Added support for the IRC protocol (courtesy of Jamie Turner).
  - Modified jabber back-end to use the xmpppy package, instead of the
    apparently-defunct jabber.py.
- - Upgraded to PyAIML version 0.8.3.  This version includes support for
+ - Upgraded to PyAIML version 0.8.4.  This version includes support for
    multiple wildcards in AIML patterns, the "index" attribute of the "star"
-   AIML elements, and Unicode text inside AIML files.
+   AIML elements, and Unicode input and AIML files.
 
 0.5.0:
  - Arbitrary switch from date-based snapshots to "real" version numbers

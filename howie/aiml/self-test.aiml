@@ -110,6 +110,12 @@ updating the tests in Kernel.py!
 </random>
 </template>
 </category>
+<category>
+<pattern>TEST RANDOM EMPTY</pattern>
+<template>
+Nothing <random></random>here!
+</template>
+</category>
 
 <!-- sentence -->
 <category>
@@ -248,8 +254,8 @@ updating the tests in Kernel.py!
 
 <!-- unicode support -->
 <category>
-<pattern>早上好</pattern>
-<template>Hey, you speak Chinese! 早上好</template>
+<pattern>郧上好</pattern>
+<template>Hey, you speak Chinese! 郧上好</template>
 </category>
 
 </aiml>

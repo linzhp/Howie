@@ -25,27 +25,27 @@ class PatternMgr:
 		self._puncStripRE = re.compile("[" + re.escape(punctuation) + "]")
 		self._whitespaceRE = re.compile("\s", re.LOCALE | re.UNICODE)
 
+	def numTemplates(self):
+		"""Return the number of templates currently stored."""
+		return self._templateCount
+
 	def setBotName(self, name):
-		"""Sets the name of the bot, used to match <bot name="name"> tags in
-patterns.  The name must be a single word!"""
+		"""Set the name of the bot, used to match <bot name="name"> tags in
+		patterns.  The name must be a single word!
+
+		"""
 		# Collapse a multi-word name into a single word
 		self._botName = unicode(string.join(name.split()))
 
 	def dump(self):
+		"""Print all learned patterns, for debugging purposes."""
 		pprint.pprint(self._root)
 
-	def upper(self, s):
-		"ASCII-only version of string.upper!"
-		ret = u""
-		for i in range(len(s)):
-			if u"a" <= s[i] <= u"z":
-				ret += unichr(ord(s[i])-32)
-			else:
-				ret += s[i]
-		return ret
-
 	def save(self, filename):
-		"Dumps the current patterns to a file.  To restore later, use restore()."
+		"""Dump the current patterns to the file specified by filename.  To
+		restore later, use restore().
+
+		"""
 		try:
 			outFile = open(filename, "wb")
 			marshal.dump(self._templateCount, outFile)
@@ -57,7 +57,7 @@ patterns.  The name must be a single word!"""
 			raise Exception, e
 
 	def restore(self, filename):
-		"Restores a previously save()d collection of patterns."
+		"""Restore a previously save()d collection of patterns."""
 		try:
 			inFile = open(filename, "rb")
 			self._templateCount = marshal.load(inFile)
@@ -69,7 +69,10 @@ patterns.  The name must be a single word!"""
 			raise Exception, e
 
 	def add(self, (pattern,that,topic), template):
-		"Adds a pattern/that/template tuple to the node tree."
+		"""Add a [pattern/that/topic] tuple and its corresponding template
+		to the node tree.
+
+		"""
 		# TODO: make sure words contains only legal characters
 		# (alphanumerics,*,_)
 
@@ -125,25 +128,25 @@ patterns.  The name must be a single word!"""
 		node[self._TEMPLATE] = template
 
 	def match(self, pattern, that, topic):
-		"""
-		Returns the template which is the closest match to pattern.
-		The 'that' parameter contains the bot's previous response.
-		The 'topic' parameter contains the current topic of conversation
+		"""Return the template which is the closest match to pattern. The
+		'that' parameter contains the bot's previous response. The 'topic'
+		parameter contains the current topic of conversation.
 
 		Returns None if no template is found.
+		
 		"""
 		if len(pattern) == 0:
 			return None
 		# Mutilate the input.  Remove all punctuation and convert the
 		# text to all caps.
-		input = self.upper(pattern)
+		input = string.upper(pattern)
 		input = re.sub(self._puncStripRE, "", input)
 		if that.strip() == u"": that = u"ULTRABOGUSDUMMYTHAT" # 'that' must never be empty
-		thatInput = self.upper(that)
+		thatInput = string.upper(that)
 		thatInput = re.sub(self._whitespaceRE, " ", thatInput)
 		thatInput = re.sub(self._puncStripRE, "", thatInput)
 		if topic.strip() == u"": topic = u"ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
-		topicInput = self.upper(topic)
+		topicInput = string.upper(topic)
 		topicInput = re.sub(self._puncStripRE, "", topicInput)
 		
 		# Pass the input off to the recursive call
@@ -153,21 +156,23 @@ patterns.  The name must be a single word!"""
 	def star(self, starType, pattern, that, topic, index):
 		"""Returns a string, the portion of pattern that was matched by a *.
 
-The 'starType' parameter specifies which type of star to find.  Legal values are:
- - 'star': matches a star in the main pattern.
- - 'thatstar': matches a star in the that pattern.
- - 'topicstar': matches a star in the topic pattern.
-"""
+		The 'starType' parameter specifies which type of star to find.
+		Legal values are:
+		 - 'star': matches a star in the main pattern.
+		 - 'thatstar': matches a star in the that pattern.
+		 - 'topicstar': matches a star in the topic pattern.
+
+		"""
 		# Mutilate the input.  Remove all punctuation and convert the
 		# text to all caps.
-		input = self.upper(pattern)
+		input = string.upper(pattern)
 		input = re.sub(self._puncStripRE, "", input)
 		if that.strip() == u"": that = u"ULTRABOGUSDUMMYTHAT" # 'that' must never be empty
-		thatInput = self.upper(that)
+		thatInput = string.upper(that)
 		thatInput = re.sub(self._whitespaceRE, " ", thatInput)
 		thatInput = re.sub(self._puncStripRE, "", thatInput)
 		if topic.strip() == u"": topic = u"ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
-		topicInput = self.upper(topic)
+		topicInput = string.upper(topic)
 		topicInput = re.sub(self._puncStripRE, "", topicInput)
 
 		# Pass the input off to the recursive pattern-matcher
@@ -241,11 +246,11 @@ The 'starType' parameter specifies which type of star to find.  Legal values are
 		else: return ""
 
 	def _match(self, words, thatWords, topicWords, root):
-		"""Behind-the-scenes recursive pattern-matching function.
+		"""Return a tuple (pat, tem) where pat is a list of nodes, starting
+		at the root and leading to the matching pattern, and tem is the
+		matched template.
 
-Returns a tuple (pat, tem) where pat is a list of nodes, starting at the root
-and leading to the matching pattern, and tem is the matched template.
-""" 
+		""" 
 		# base-case: if the word list is empty, return the current node's
 		# template.
 		if len(words) == 0:
@@ -321,9 +326,4 @@ and leading to the matching pattern, and tem is the matched template.
 					return (newPattern, template)
 
 		# No matches were found.
-		return (None, None)
-
-	def numTemplates(self):
-		"Returns the number of templates currently stored."
-		return self._templateCount
-			
+		return (None, None)			
