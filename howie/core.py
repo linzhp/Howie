@@ -71,7 +71,7 @@ def init():
 			
 			# Look for classes which are descended from IFrontEnd
 			for cls, clsInfo in classes.items():
-				if issubclass(eval("frontends.%s.%s" % (fe, cls)), frontend.IFrontEnd):
+				if issubclass(eval("frontends.%s.%s" % (fe, cls)), frontends.frontend.IFrontEnd):
 					# Create an instance of this class in the __frontends dictionary.
 					__addFrontEnd(fe, cls)
 					break
