@@ -97,10 +97,10 @@ class Googlismer:
 		# a random selection.
 		googs = self.__googlisms(result.group('query'), result.group('qtype'))
 		if len(googs) != 0:
-			return "%s %s %s" % (result.group('query'), result.group('verb'),
+			return "%s %s %s" % (result.group('query'), string.lower(result.group('verb')),
 								 random.choice(googs))
 		else:
-			return None
+			return "I don't know %s you're talking about." % string.lower(result.group('qtype'))
 
 def main():
 	query = string.join(sys.argv[1:])
