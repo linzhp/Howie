@@ -4,17 +4,9 @@ import re
 import shelve
 import string
 import urllib
+import sys
 
-import howie.configFile
-import backend
-
-configDefaults = {
-	"googlism.active":			"yes",		# Is this module active (yes/no)
-	#"googlism.frequency":		"0.5",		# How often should a googlism response be returned?
-	"googlism.cachesize":		"64"		# How many googlisms should be cached?
-	}
-
-class BackEndGooglism(backend.IBackEnd):
+class Googlismer:
 	def __init__(self):
 		self.__cmdRegex = re.compile("(?P<qtype>who|what|where|when) (?P<verb>is|are|was|were) (?P<query>[^?]+)", re.I)
 		self.__cacheFile = "googlism_cache"
@@ -28,8 +20,7 @@ class BackEndGooglism(backend.IBackEnd):
 		is updated with the new value.  If the cache has grown too large, it
 		is pruned.
 		"""
-		try: maxCacheSize = int(howie.configFile.get()['googlism.cachesize'])
-		except KeyError: maxCacheSize = int(configDefaults['googlism.cachesize'])
+		maxCacheSize = 64
 		
 		# TODO: Keep a priority queue of (timestamp, key) pairs in memory.  Use
 		# that pq to intelligently remove the LRU cache entry.  YEAH!
@@ -72,8 +63,7 @@ class BackEndGooglism(backend.IBackEnd):
 			"&type=" + str(nType)
 		try: result_page = urllib.urlopen(url)
 		except IOError:
-			if howie.configFile.get()['cla.verboseMode'] == 'yes':
-				print "ERROR: Could not connect to Googlisms server."
+			print "ERROR: Could not connect to Googlisms server."
 			return {}
 		lines = result_page.readlines()
 		
@@ -97,9 +87,6 @@ class BackEndGooglism(backend.IBackEnd):
 		returns a random answer from the Googlism server.  None is returned
 		if an error occurs.
 		"""
-		# Make sure the module is active.
-		if howie.configFile.get()['googlism.active'] != 'yes':
-			return None
 
 		# Make sure the input is a Googlism-type question.
 		result = self.__cmdRegex.search(input)
@@ -114,3 +101,13 @@ class BackEndGooglism(backend.IBackEnd):
 								 random.choice(googs))
 		else:
 			return None
+
+def main():
+	query = string.join(sys.argv[1:])
+	googler = Googlismer()
+	response = googler.respondTo(query)
+	print response
+
+# Run main.
+if __name__ == "__main__":
+    main()  		

@@ -1,1 +1,1 @@
-__all__ = ["googlism", "jalice"]
+__all__ = ["jalice"]

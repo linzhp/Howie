@@ -70,6 +70,7 @@ Thanks for using J-ALICE!
 <pattern>LOAD AIML B</pattern>
 <template>
 <secure>
+<learn>standard/dev-googlism.aiml</learn>
 <learn>standard/std-65percent.aiml</learn>
 <learn>standard/std-atomic.aiml</learn>
 <learn>standard/std-botmaster.aiml</learn>

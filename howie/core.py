@@ -76,11 +76,5 @@ def init():
 
 def submit(input, user):
 	"Submits a statement to the back-end. Returns the response to the statement."
-	# Googlisms
-	beGoog = googlism.BackEndGooglism()
-	result = beGoog.respondTo(input)
-	if result is not None:
-		return result
 	
-	# Fall-back: let jalice respond
 	return jalice.respond(input, user)
