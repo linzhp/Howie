@@ -87,10 +87,7 @@ if __name__ == "__main__":
     # format the acronym to search for
     acro = formatAcro(args[0])
 
-    # Submit the query to acronymfinder.com and open a file handle
-    # to the results page.  We need to override urllib's default
-    # User Agent, because acronymfinder.com attempts to filter out
-    # scrapers based on their User Agent.
+    # Submit the query and open a file handle to the results page.
     class AppURLopener(urllib.FancyURLopener):
          def __init__(self, *args):
              self.version = "Mozilla/4.0"
