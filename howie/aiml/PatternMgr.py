@@ -3,6 +3,7 @@
 # http://www.alicebot.org/documentation/matching.html
 
 import marshal
+import pprint
 import re
 import string
 import sys
@@ -19,18 +20,29 @@ class PatternMgr:
 	def __init__(self):
 		self._root = {}
 		self._templateCount = 0
-		self._botName = "Nameless"
-		self._convertRE = re.compile("[^A-Z0-9_* ]")
-		self._whitespaceTransTable = string.maketrans("\n\t", "  ")
+		self._botName = u"Nameless"
+		punctuation = "\"`~1@#$%^&*()-_=+[{]}\|;:',<.>/?"
+		self._puncStripRE = re.compile("[" + re.escape(punctuation) + "]")
+		self._whitespaceRE = re.compile("\s", re.LOCALE | re.UNICODE)
 
 	def setBotName(self, name):
 		"""Sets the name of the bot, used to match <bot name="name"> tags in
 patterns.  The name must be a single word!"""
 		# Collapse a multi-word name into a single word
-		self._botName = string.join(name.split())
+		self._botName = unicode(string.join(name.split()))
 
 	def dump(self):
 		pprint.pprint(self._root)
+
+	def upper(self, s):
+		"ASCII-only version of string.upper!"
+		ret = u""
+		for i in range(len(s)):
+			if u"a" <= s[i] <= u"z":
+				ret += unichr(ord(s[i])-32)
+			else:
+				ret += s[i]
+		return ret
 
 	def save(self, filename):
 		"Dumps the current patterns to a file.  To restore later, use restore()."
@@ -66,11 +78,11 @@ patterns.  The name must be a single word!"""
 		node = self._root
 		for word in string.split(pattern):
 			key = word
-			if key == "_":
+			if key == u"_":
 				key = self._UNDERSCORE
-			elif key == "*":
+			elif key == u"*":
 				key = self._STAR
-			elif key == "BOT_NAME":
+			elif key == u"BOT_NAME":
 				key = self._BOT_NAME
 			if not node.has_key(key):
 				node[key] = {}
@@ -83,9 +95,9 @@ patterns.  The name must be a single word!"""
 			node = node[self._THAT]
 			for word in string.split(that):
 				key = word
-				if key == "_":
+				if key == u"_":
 					key = self._UNDERSCORE
-				elif key == "*":
+				elif key == u"*":
 					key = self._STAR
 				if not node.has_key(key):
 					node[key] = {}
@@ -98,9 +110,9 @@ patterns.  The name must be a single word!"""
 			node = node[self._TOPIC]
 			for word in string.split(topic):
 				key = word
-				if key == "_":
+				if key == u"_":
 					key = self._UNDERSCORE
-				elif key == "*":
+				elif key == u"*":
 					key = self._STAR
 				if not node.has_key(key):
 					node[key] = {}
@@ -124,22 +136,21 @@ patterns.  The name must be a single word!"""
 			return None
 		# Mutilate the input.  Remove all punctuation and convert the
 		# text to all caps.
-		input = string.upper(pattern)
-		input = re.sub(self._convertRE, "", input)
-		if that.strip() == "": that = "ULTRABOGUSDUMMYTHAT" # 'that' must never be empty
-		thatInput = string.upper(that)
-		try: thatInput = thatInput.translate(self._whitespaceTransTable)
-		except TypeError: pass # translate doesn't work on Unicode strings
-		thatInput = re.sub(self._convertRE, "", thatInput)
-		if topic.strip() == "": topic = "ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
-		topicInput = string.upper(topic)
-		topicInput = re.sub(self._convertRE, "", topicInput)
+		input = self.upper(pattern)
+		input = re.sub(self._puncStripRE, "", input)
+		if that.strip() == u"": that = u"ULTRABOGUSDUMMYTHAT" # 'that' must never be empty
+		thatInput = self.upper(that)
+		thatInput = re.sub(self._whitespaceRE, " ", thatInput)
+		thatInput = re.sub(self._puncStripRE, "", thatInput)
+		if topic.strip() == u"": topic = u"ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
+		topicInput = self.upper(topic)
+		topicInput = re.sub(self._puncStripRE, "", topicInput)
 		
 		# Pass the input off to the recursive call
 		patMatch, template = self._match(input.split(), thatInput.split(), topicInput.split(), self._root)
 		return template
 
-	def star(self, starType, pattern, that, topic):
+	def star(self, starType, pattern, that, topic, index):
 		"""Returns a string, the portion of pattern that was matched by a *.
 
 The 'starType' parameter specifies which type of star to find.  Legal values are:
@@ -149,16 +160,15 @@ The 'starType' parameter specifies which type of star to find.  Legal values are
 """
 		# Mutilate the input.  Remove all punctuation and convert the
 		# text to all caps.
-		input = string.upper(pattern)
-		input = re.sub(self._convertRE, "", input)
-		if that.strip() == "": that = "ULTRABOGUSDUMMYTHAT" # 'that' must never be empty
-		thatInput = string.upper(that)
-		try: thatInput = thatInput.translate(self._whitespaceTransTable)
-		except TypeError: pass # translate doesn't work on Unicode strings
-		thatInput = re.sub(self._convertRE, "", thatInput)
-		if topic.strip() == "": topic = "ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
-		topicInput = string.upper(topic)
-		topicInput = re.sub(self._convertRE, "", topicInput)
+		input = self.upper(pattern)
+		input = re.sub(self._puncStripRE, "", input)
+		if that.strip() == u"": that = u"ULTRABOGUSDUMMYTHAT" # 'that' must never be empty
+		thatInput = self.upper(that)
+		thatInput = re.sub(self._whitespaceRE, " ", thatInput)
+		thatInput = re.sub(self._puncStripRE, "", thatInput)
+		if topic.strip() == u"": topic = u"ULTRABOGUSDUMMYTOPIC" # 'topic' must never be empty
+		topicInput = self.upper(topic)
+		topicInput = re.sub(self._puncStripRE, "", topicInput)
 
 		# Pass the input off to the recursive pattern-matcher
 		patMatch, template = self._match(input.split(), thatInput.split(), topicInput.split(), self._root)
@@ -182,29 +192,49 @@ The 'starType' parameter specifies which type of star to find.  Legal values are
 			raise ValueError, "starType must be in ['star', 'thatstar', 'topicstar']"
 		
 		# compare the input string to the matched pattern, word by word.
-		inStar = False
-		start = end = j = 0
+		# At the end of this loop, if foundTheRightStar is true, start and
+		# end will contain the start and end indices (in "words") of
+		# the substring that the desired star matched.
+		foundTheRightStar = False
+		start = end = j = numStars = k = 0
 		for i in range(len(words)):
-			# check for the end of the input string
-			if patMatch[j] in [self._THAT]:
+			# This condition is true after processing a star
+			# that ISN'T the one we're looking for.
+			if i < k:
+				continue
+			# If we're reached the end of the pattern, we're done.
+			if j == len(patMatch):
 				break
-			if not inStar:
-				# if the two words are the same, advance the indices
-				if patMatch[j] in [self._STAR, self._UNDERSCORE]:
-					# a star is born!
-					inStar = True
+			if not foundTheRightStar:
+				if patMatch[j] in [self._STAR, self._UNDERSCORE]: #we got a star
+					numStars += 1
+					if numStars == index:
+						# This is the star we care about.
+						foundTheRightStar = True
 					start = i
-					# if the star is the last element in the pattern, we're done.
-					if patMatch[-1] in [self._STAR, self._UNDERSCORE]:
-						end = len(words)
-						break;
-				j += 1 # next word
-			else:
-				if words[i:] == patMatch[j:]:
-					end = i-1
+					# Iterate through the rest of the string.
+					for k in range (i, len(words)):
+						# If the star is at the end of the pattern,
+						# we know exactly where it ends.
+						if j+1  == len (patMatch):
+							end = len (words)
+							break
+						# If the words have started matching the
+						# pattern again, the star has ended.
+						if patMatch[j+1] == words[k]:
+							end = k - 1
+							i = k
+							break
+				# If we just finished processing the star we cared
+				# about, we exit the loop early.
+				if foundTheRightStar:
 					break
+			# Move to the next element of the pattern.
+			j += 1
+			
 		# extract the star words from the original, unmutilated input.
-		if inStar:
+		if foundTheRightStar:
+			#print string.join(pattern.split()[start:end+1])
 			if starType == 'star': return string.join(pattern.split()[start:end+1])
 			elif starType == 'thatstar': return string.join(that.split()[start:end+1])
 			elif starType == 'topicstar': return string.join(topic.split()[start:end+1])

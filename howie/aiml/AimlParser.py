@@ -1,10 +1,12 @@
 from xml.sax.handler import ContentHandler
 from xml.sax.xmlreader import Locator
 import sys
+import xml.sax
+import xml.sax.handler
 
 class AimlParserError(Exception): pass
 
-class AimlParser(ContentHandler):
+class AimlHandler(ContentHandler):
 	# The legal states of the AIML parser
 	_STATE_OutsideAiml    = 0
 	_STATE_InsideAiml     = 1
@@ -16,7 +18,7 @@ class AimlParser(ContentHandler):
 	_STATE_InsideTemplate = 7
 	_STATE_AfterTemplate  = 8
 	
-	def __init__(self, encoding = "Latin-1"):
+	def __init__(self, encoding = "UTF-8"):
 		self.categories = {}
 		self._encoding = encoding
 		self._state = self._STATE_OutsideAiml
@@ -54,6 +56,11 @@ class AimlParser(ContentHandler):
 		"Returns the number of errors found while parsing the current document."
 		return self._numParseErrors
 
+	def setEncoding(self, encoding):
+		"""Sets the text encoding to use when encoding strings read from XML.
+Defaults to 'UTF-8'."""
+		self._encoding = encoding
+
 	def _location(self):
 		"Returns a string describing the current location in the source file."
 		line = self._locator.getLineNumber()
@@ -61,9 +68,11 @@ class AimlParser(ContentHandler):
 		return "(line %d, column %d)" % (line, column)
 
 	def startElementNS(self, name, qname, attr):
-		#print "NAME:", name
-		#print "QNAME:", qname
-		#print "ATTR:", attr
+		print "QNAME:", qname
+		print "NAME:", name
+		uri,elem = name
+		if (elem == "bot"): print "name:", attr.getValueByQName("name"), "a'ite?"
+		self.startElement(elem, attr)
 		pass
 
 	def startElement(self, name, attr):
@@ -97,7 +106,7 @@ class AimlParser(ContentHandler):
 				raise AimlParserError, "Unexpected <aiml> tag "+self._location()
 			self._state = self._STATE_InsideAiml
 			self._insideTopic = False
-			self._currentTopic = ""
+			self._currentTopic = u""
 			try: self._version = attr["version"]
 			except KeyError:
 				# This SHOULD be a syntax error, but so many AIML sets out there are missing
@@ -123,7 +132,7 @@ class AimlParser(ContentHandler):
 			# if we're not already inside a topic.
 			if (self._state != self._STATE_InsideAiml) or self._insideTopic:
 				raise AimlParserError, "Unexpected <topic> tag", self._location()
-			try: self._currentTopic = attr['name'].encode(self._encoding)
+			try: self._currentTopic = unicode(attr['name'])
 			except KeyError:
 				raise AimlParserError, "Required \"name\" attribute missing in <topic> element "+self._location()
 			self._insideTopic = True
@@ -132,10 +141,10 @@ class AimlParser(ContentHandler):
 			if self._state != self._STATE_InsideAiml:
 				raise AimlParserError, "Unexpected <category> tag "+self._location()
 			self._state = self._STATE_InsideCategory
-			self._currentPattern = ""
-			self._currentThat = ""
+			self._currentPattern = u""
+			self._currentThat = u""
 			# If we're not inside a topic, the topic is implicitly set to *
-			if not self._insideTopic: self._currentTopic = "*"
+			if not self._insideTopic: self._currentTopic = u"*"
 			self._elemStack = []
 		elif name == "pattern":
 			# <pattern> tags are only legal in the InsideCategory state
@@ -154,23 +163,23 @@ class AimlParser(ContentHandler):
 				raise AimlParserError, "Unexpected <template> tag "+self._location()
 			# if no <that> element was specified, it is implicitly set to *
 			if self._state == self._STATE_AfterPattern:
-				self._currentThat = "*"
+				self._currentThat = u"*"
 			self._state = self._STATE_InsideTemplate
 			self._elemStack.append(['template',{}])
 		elif self._state == self._STATE_InsidePattern:
 			# Certain tags are allowed inside <pattern> elements.
-			if name == "bot" and attr.has_key("name") and attr["name"] == "name":
+			if name == "bot" and attr.has_key("name") and attr["name"] == u"name":
 				# Insert a special character string that the PatternMgr will
 				# replace with the bot's name.
-				self._currentPattern += " BOT_NAME "
+				self._currentPattern += u" BOT_NAME "
 			else:
 				raise AimlParserError, ("Unexpected <%s> tag " % name)+self._location()
 		elif self._state == self._STATE_InsideThat:
 			# Certain tags are allowed inside <that> elements.
-			if name == "bot" and attr.has_key("name") and attr["name"] == "name":
+			if name == "bot" and attr.has_key("name") and attr["name"] == u"name":
 				# Insert a special character string that the PatternMgr will
 				# replace with the bot's name.
-				self._currentThat += " BOT_NAME "
+				self._currentThat += u" BOT_NAME "
 			else:
 				raise AimlParserError, ("Unexpected <%s> tag " % name)+self._location()
 		elif self._state == self._STATE_InsideTemplate and self._validInfo.has_key(name):
@@ -179,7 +188,8 @@ class AimlParser(ContentHandler):
 			# so it can later be marshaled.
 			attrDict = {}
 			for k,v in attr.items():
-				attrDict[k.encode(self._encoding)] = v.encode(self._encoding)
+				#attrDict[k[1].encode(self._encoding)] = v.encode(self._encoding)
+				attrDict[k.encode(self._encoding)] = unicode(v)
 			self._validateElemStart(name, attrDict, self._version)
 			# Push the current element onto the element stack.
 			self._elemStack.append([name.encode(self._encoding),attrDict])
@@ -219,7 +229,7 @@ class AimlParser(ContentHandler):
 				self._skipCurrentCategory = True
 			
 	def _characters(self, ch):
-		text = ch.encode(self._encoding)
+		text = unicode(ch)
 		if self._state == self._STATE_InsidePattern:
 			self._currentPattern += text
 		elif self._state == self._STATE_InsideThat:
@@ -262,6 +272,10 @@ class AimlParser(ContentHandler):
 		else:
 			# all other text is ignored
 			pass
+
+	def endElementNS(self, name, qname):
+		uri, elem = name
+		self.endElement(elem)
 		
 	def endElement(self, name):
 		# Wrapper around _endElement which catches errors in _characters()
@@ -304,7 +318,7 @@ class AimlParser(ContentHandler):
 			if self._state != self._STATE_InsideAiml or not self._insideTopic:
 				raise AimlParserError, "Unexpected </topic> tag "+self._location()
 			self._insideTopic = False
-			self._currentTopic = ""
+			self._currentTopic = u""
 		elif name == "category":
 			# </category> tags are only legal in the AfterTemplate state
 			if self._state != self._STATE_AfterTemplate:
@@ -405,6 +419,18 @@ class AimlParser(ContentHandler):
 			if a not in optional and not self._forwardCompatibleMode:
 				raise AimlParserError, ("Unexpected \"%s\" attribute in <%s> element " % (a,name))+self._location()
 
+		# special-case: several tags contain an optional "index" attribute.
+		# This attribute's value must be a positive integer.
+		if name in ["star", "thatstar", "topicstar"]:
+			for k,v in attr.items():
+				if k == "index":
+					temp = 0
+					try: temp = int(v)
+					except:
+						raise AimlParserError, ("Bad type for \"%s\" attribute (expected integer, found \"%s\") " % (k,v))+self._location()
+					if temp < 1:
+						raise AimlParserError, ("\"%s\" attribute must have non-negative value " % (k))+self._location()
+
 		# See whether the containing element is permitted to contain
 		# subelements. If not, this element is invalid no matter what it is.
 		try:
@@ -461,3 +487,10 @@ class AimlParser(ContentHandler):
 						raise AimlParserError, "Invalid <li> inside multi-predicate <condition> "+self._location()
 		# All is well!
 		return True
+
+def create_parser():
+	parser = xml.sax.make_parser()
+	handler = AimlHandler("UTF-8")
+	parser.setContentHandler(handler)
+	#parser.setFeature(xml.sax.handler.feature_namespaces, True)
+	return parser

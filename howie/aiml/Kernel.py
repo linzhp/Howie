@@ -1,9 +1,9 @@
 """
 This file contains the public interface to the aiml module.
 """
+import AimlParser
 import DefaultSubs
 import Utils
-from AimlParser import AimlParser
 from PatternMgr import PatternMgr
 from WordSub import WordSub
 
@@ -32,9 +32,10 @@ class Kernel:
 
     def __init__(self):
         self._verboseMode = True
-        self._version = "PyAIML 0.8.2"
+        self._version = "PyAIML 0.8.3"
         self._brain = PatternMgr()
         self._respondLock = threading.RLock()
+        self._textEncoding = "UTF-8"
 
         # set up the sessions        
         self._sessions = {}
@@ -184,6 +185,10 @@ class Kernel:
         if name == "name":
             self._brain.setBotName(self.getBotPredicate("name"))
 
+    def setTextEncoding(self, encoding):
+        "Sets the text encoding used when loading AIML files (Latin-1, UTF-8, etc.)"
+        self._textEncoding = encoding
+
     def loadSubs(self, filename):
         """Load a substitutions file.  The file must be in the Windows-style INI
 format (see the standard ConfigParser module docs for information on
@@ -238,8 +243,10 @@ session dictionaries."""
             if self._verboseMode: print "Loading %s..." % f,
             start = time.clock()
             # Load and parse the AIML file.
-            handler = AimlParser()
-            try: xml.sax.parse(f, handler)
+            parser = AimlParser.create_parser()
+            handler = parser.getContentHandler()
+            handler.setEncoding(self._textEncoding)
+            try: parser.parse(f)
             except xml.sax.SAXParseException, msg:
                 err = "\nFATAL PARSE ERROR in file %s:\n%s\n" % (f,msg)
                 sys.stderr.write(err)
@@ -678,11 +685,6 @@ session dictionaries."""
         # to have one * each, only an index of 1 currently makes sense.
         try: index = int(elem[1]['index'])
         except KeyError: index = 1
-        if index > 1:
-            if self._verboseMode:
-                err = "WARNING: index>1 currently has no meaning in <star> tags.\n"
-                sys.stderr.write(err)
-            return ""
         # fetch the user's last input
         inputStack = self.getPredicate(self._inputStack, sessionID)
         input = self._subbers['normal'].sub(inputStack[-1])
@@ -691,7 +693,7 @@ session dictionaries."""
         try: that = self._subbers['normal'].sub(outputHistory[-1])
         except: that = "" # there might not be any output yet
         topic = self.getPredicate("topic", sessionID)
-        response = self._brain.star("star", input, that, topic)
+        response = self._brain.star("star", input, that, topic, index)
         return response
     
     # system
@@ -777,11 +779,6 @@ session dictionaries."""
         # matched by a *.
         try: index = int(elem[1]['index'])
         except KeyError: index = 1
-        if index > 1:
-            if self._verboseMode:
-                err = "WARNING: index>1 currently has no meaning in <thatstar> tags.\n"
-                sys.stderr.write(err)
-            return ""
         # fetch the user's last input
         inputStack = self.getPredicate(self._inputStack, sessionID)
         input = self._subbers['normal'].sub(inputStack[-1])
@@ -790,7 +787,7 @@ session dictionaries."""
         try: that = self._subbers['normal'].sub(outputHistory[-1])
         except: that = "" # there might not be any output yet
         topic = self.getPredicate("topic", sessionID)
-        response = self._brain.star("thatstar", input, that, topic)
+        response = self._brain.star("thatstar", input, that, topic, index)
         return response
 
     # think
@@ -811,11 +808,6 @@ session dictionaries."""
         # matched by a *.
         try: index = int(elem[1]['index'])
         except KeyError: index = 1
-        if index > 1:
-            if self._verboseMode:
-                err = "WARNING: index>1 currently has no meaning in <topicstar> tags.\n"
-                sys.stderr.write(err)
-            return ""
         # fetch the user's last input
         inputStack = self.getPredicate(self._inputStack, sessionID)
         input = self._subbers['normal'].sub(inputStack[-1])
@@ -824,7 +816,7 @@ session dictionaries."""
         try: that = self._subbers['normal'].sub(outputHistory[-1])
         except: that = "" # there might not be any output yet
         topic = self.getPredicate("topic", sessionID)
-        response = self._brain.star("topicstar", input, that, topic)
+        response = self._brain.star("topicstar", input, that, topic, index)
         return response
 
     # uppercase
@@ -918,16 +910,23 @@ if __name__ == "__main__":
     _testTag(k, 'star test #1', 'You should test star begin', ['Begin star matched: You should']) 
     _testTag(k, 'star test #2', 'test star creamy goodness middle', ['Middle star matched: creamy goodness'])
     _testTag(k, 'star test #3', 'test star end the credits roll', ['End star matched: the credits roll'])
+    _testTag(k, 'star test #4', 'test star having multiple stars in a pattern makes me extremely happy',
+             ['Multiple stars matched: having, stars in a pattern, extremely happy'])
     _testTag(k, 'system', "test system", ["The system says hello!"])
     _testTag(k, 'that test #1', "test that", ["I just said: The system says hello!"])
     _testTag(k, 'that test #2', "test that", ["I have already answered this question"])
     _testTag(k, 'thatstar test #1', "test thatstar", ["I say beans"])
     _testTag(k, 'thatstar test #2', "test thatstar", ["I just said \"beans\""])
+    _testTag(k, 'thatstar test #3', "test thatstar multiple", ['I say beans and franks for everybody'])
+    _testTag(k, 'thatstar test #4', "test thatstar multiple", ['Yes, beans and franks for all!'])
     _testTag(k, 'think', "test think", [""])
     k.setPredicate("topic", "fruit")
     _testTag(k, 'topic', "test topic", ["We were discussing apples and oranges"]) 
     k.setPredicate("topic", "Soylent Green")
-    _testTag(k, 'topicstar', 'test topicstar', ["Solyent Green is made of people!"])
+    _testTag(k, 'topicstar test #1', 'test topicstar', ["Solyent Green is made of people!"])
+    k.setPredicate("topic", "Soylent Ham and Cheese")
+    _testTag(k, 'topicstar test #2', 'test topicstar multiple', ["Both Soylents Ham and Cheese are made of people!"])
+    _testTag(k, 'unicode support', u"\xd4\xe7\xc9\xcf\xba\xc3", [u"Hey, you speak Chinese! \xd4\xe7\xc9\xcf\xba\xc3"])
     _testTag(k, 'uppercase', 'test uppercase', ["The Last Word Should Be UPPERCASE"])
     _testTag(k, 'version', 'test version', ["PyAIML is version %s" % k.version()])
 

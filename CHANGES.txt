@@ -1,3 +1,8 @@
+0.5.1:
+ - Upgraded to PyAIML version 0.8.3.  This version includes support for
+   multiple wildcards in AIML patterns, the "index" attribute of the "star"
+   AIML elements, and Unicode text inside AIML files.
+
 0.5.0:
  - Arbitrary switch from date-based snapshots to "real" version numbers
  - Upgraded AIML interpreter to PyAIML version 0.8.2.  This release fixes some
