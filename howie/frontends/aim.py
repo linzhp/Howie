@@ -13,8 +13,8 @@ frontEndClass = "FrontEndAIM"
 # default config file values for this module
 configDefaults = {
 	"aim.active":			"no",
-	"aim.screenname":		"botname",
-	"aim.password":			"changeme",
+	"aim.screenname":		"",
+	"aim.password":			"",
 	"aim.profile":			"Your profile goes here."
 	}
 
