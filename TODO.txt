@@ -13,6 +13,7 @@ Additional extension modules:
  - Email spoofer.
  - Address book / contact manager
  - Sysadmin assistant
+ - Acronym decoder
 
 Other features:
  - Auto-configuration tool (script, GUI)
