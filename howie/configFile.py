@@ -21,7 +21,8 @@ from frontends import *
 configDefaults = {
     "general.botname":		"Howie",
     "general.botmaster":	"Your Name",
-    "general.maxdelay":     "0"
+    "general.maxdelay":     "0",
+    "general.verbose":      "no",
     }
 for package in ['frontends']:
     for name in eval("%s.__all__" % package):
