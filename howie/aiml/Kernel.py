@@ -24,6 +24,7 @@ class Kernel:
     # module constants
     _globalSessionID = "_global" # key of the global session (duh)
     _maxHistorySize = 10 # maximum length of the _inputs and _responses lists
+    _maxRecursionDepth = 100 # maximum number of recursive <srai>/<sr> tags before the response is aborted.
     # special predicate keys
     _inputHistory = "_inputHistory"     # keys to a queue (list) of recent user input
     _outputHistory = "_outputHistory"   # keys to a queue (list) of recent responses.
@@ -31,7 +32,7 @@ class Kernel:
 
     def __init__(self):
         self._verboseMode = True
-        self._version = "PyAIML 0.8.1"
+        self._version = "PyAIML 0.8.2"
         self._brain = PatternMgr()
         self._respondLock = threading.RLock()
 
@@ -133,15 +134,6 @@ class Kernel:
         # there's a one-to-one mapping between templates and categories
         return self._brain.numTemplates()
 
-    def setBotName(self, newName):
-        "Sets the bot's name.  THIS FUNCTION IS DEPRECATED -- use setBotPredicate instead"
-        print "NOTE: Kernel.setBotName() is deprecated. Use Kernel.setBotPredicate() instead."
-        self.setBotPredicate("name", newName)
-    def getBotName(self):
-        "Returns the bot's name. THIS FUNCTION IS DEPRECATED -- use getBotPredicate instead."
-        print "NOTE: Kernel.getBotName() is deprecated. Use Kernel.getBotPredicate() instead."
-        return self.getBotPredicate("name")
-        
     def resetBrain(self):
         "Erases all of the bot's knowledge."
         del(self._brain)
@@ -309,6 +301,13 @@ session dictionaries."""
     def _respond(self, input, sessionID):
         "Private version of respond(), does the real work."
         if len(input) == 0:
+            return ""
+
+        # guard against infinite recursion
+        inputStack = self.getPredicate(self._inputStack, sessionID)
+        if len(inputStack) > self._maxRecursionDepth:
+            if self._verboseMode:
+                err = "WARNING: maximum recursion depth exceeded (input='%s')" % input
             return ""
 
         # push the input onto the input stack
@@ -915,6 +914,7 @@ if __name__ == "__main__":
     _testTag(k, 'sr', "test sr test srai", ["srai results: srai test passed"])
     _testTag(k, 'sr nested', "test nested sr test srai", ["srai results: srai test passed"])
     _testTag(k, 'srai', "test srai", ["srai test passed"])
+    _testTag(k, 'srai infinite', "test srai infinite", [""])
     _testTag(k, 'star test #1', 'You should test star begin', ['Begin star matched: You should']) 
     _testTag(k, 'star test #2', 'test star creamy goodness middle', ['Middle star matched: creamy goodness'])
     _testTag(k, 'star test #3', 'test star end the credits roll', ['End star matched: the credits roll'])
