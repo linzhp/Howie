@@ -22,8 +22,8 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 		try: password = config['aim.password']
 		except KeyError: password = getpass.getpass("AIM password for %s: " % screenname)
 		toc.TocTalk.__init__(self, screenname, password)
-		try: self.__info = config['aim.profile']
-		except KeyError: self.__info = "No profile."
+		try: self._info = config['aim.profile']
+		except KeyError: self._info = "No profile."
 
 	def start(self):
 		"Do stuff here immediately after the bot connects."
