@@ -5,8 +5,10 @@ import pyclbr
 import random
 import re
 import string
+import sys
 import threading
 import time
+import traceback
 
 # Howie-specific
 import aiml
@@ -95,7 +97,10 @@ def init():
 	
 	# Handle local mode: only start the tty frontend
 	if config['cla.localMode'].lower() in ["yes", "y", "true"]:
-		_addFrontEnd("tty", "FrontEndTTY")
+		try: _addFrontEnd("tty", "FrontEndTTY")
+		except:
+			print "ERROR initializing frontend class frontends.tty.FrontEndTTY"
+			traceback.print_tb(sys.exc_info()[2])
 	else:
 		# Initialize the front-ends.  Pythonic black magic ensues...
 		# First we iterate over all frontend modules.
@@ -116,14 +121,21 @@ def init():
 			# skip this module.
 			try:
 				cls = eval("frontends.%s.frontEndClass" % fe)
-				if issubclass(eval("frontends.%s.%s" % (fe, cls)), frontends.frontend.IFrontEnd):
-					# Create an instance of this class in the _frontends dictionary
-					_addFrontEnd(fe, cls)
+				if not issubclass(eval("frontends.%s.%s" % (fe, cls)), frontends.frontend.IFrontEnd):
+					continue
 			except AttributeError:
-				# no class defined in this file.
+				# no valid front-end class defined in this file.
 				print "WARNING: could not find valid front-end class in module %s" % fe
 				continue
 
+			# Create an instance of this class in the _frontends dictionary
+			try: _addFrontEnd(fe, cls)
+			except:
+				# raise # uncomment for details on error
+				print "ERROR initializing frontend class frontends.%s.%s" % (fe,cls)
+				traceback.print_tb(sys.exc_info()[2])
+				continue
+			
 def submit(input, session):
 	"Submits a statement to the back-end. Returns the response to the statement."
 	response = kernel.respond(input, session)

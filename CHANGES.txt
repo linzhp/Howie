@@ -5,6 +5,9 @@
  - Upgraded to PyAIML version 0.8.4.  This version includes support for
    multiple wildcards in AIML patterns, the "index" attribute of the "star"
    AIML elements, and Unicode input and AIML files.
+ - Improved error-handling during front-end module initialization.  Previously,
+   any errors were mistakenly reported as "could not find valid frontend class"
+   warnings.
 
 0.5.0:
  - Arbitrary switch from date-based snapshots to "real" version numbers
