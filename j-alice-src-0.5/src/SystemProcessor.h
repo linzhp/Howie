@@ -143,11 +143,16 @@ public:
 			//	Find a way to do something asynchronously like Win32
 		}
 #endif
+
+        // cort: "chomp" off a trailing newline, if one exists.
+        string::size_type eolpos = str.find_first_of("\r\n");
+        if (eolpos != string::npos)
+        {
+            str.resize(eolpos);
+        }
 		return str;
 	}
 //	~SystemProcessor() { }
-	
-	
 };
 
 #endif
