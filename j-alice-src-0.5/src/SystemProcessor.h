@@ -119,7 +119,15 @@ public:
 			}
 
 			CloseHandle(cOutRD);
-			CloseHandle(outSave);
+			// cort: this line is throwing an exception when j-alice is embedded in
+            // a Python environment.  We need to catch & ignore that exception, though
+            // I wish there were a way to avoid making the call under those circumstances.
+            // Also, it appears to be throwing some sort of of bizarre instruction that
+            // the following code doesn't properly ignore.  Whatever, I'm commenting it
+            // out.
+            //try {
+			//    CloseHandle(outSave);
+            //} catch (...) {}
 		}
 #else
 		if (mode.empty() || mode == "sync") {
