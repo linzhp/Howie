@@ -1,5 +1,4 @@
 Additional frontends:
- - ICQ: I haven't found a Python ICQ module yet.
  - WEB: In progress.
 
 Additional extension modules:
