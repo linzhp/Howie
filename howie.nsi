@@ -91,6 +91,7 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 	SetDetailsPrint textonly
 	File /r dist\runme\*
 	Rename runme.exe howie.exe
+	File C:\progra~1\Python\w9xpopen.exe
 	SetDetailsPrint both
 	
 	# Install documentation
