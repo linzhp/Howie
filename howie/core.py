@@ -43,13 +43,15 @@ def init():
 	# Fetch the configuration info
 	config = configFile.get()
 	
-	# Initialize the AIML interpreter	
+	# Initialize the AIML interpreter
+	print "Initializing AIML interpreter (please be patient)..."
 	kernel = aiml.Kernel()
+	kernel.persistentSessions(True, sessionsDir="sessions")
 	kernel.verbose(config["general.verbose"] == "yes" or config["cla.verboseMode"] == "yes")
 	kernel.setPredicate("secure", "yes") # secure the global session
 	kernel.bootstrap(learnFiles="std-startup.xml", commands="bootstrap")
 	kernel.setPredicate("secure", "no") # and unsecure it.
-	kernel.setBotName(config["general.botname"])
+	kernel.setBotPredicate("name", config["general.botname"])
 	
 	# Handle local mode: only start the tty frontend
 	if config['cla.localMode'] == "yes":
@@ -93,7 +95,7 @@ def submit(input, session):
 			logfile = file("%s/%s.log" % (logdir, session), "a")
 			logfile.write(time.strftime("[%m/%d %H:%M:%S]\n"))
 			logfile.write("%s: %s\n" % (session, input))
-			logfile.write("%s: %s\n" % (kernel.getBotName(), response))
+			logfile.write("%s: %s\n" % (kernel.getBotPredicate("name"), response))
 			logfile.close()			
 	except:
 		pass
