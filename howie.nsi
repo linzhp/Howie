@@ -88,6 +88,13 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 	File /r dist\runme\*
 	Rename runme.exe howie.exe
 	SetDetailsPrint both
+	
+	# Install documentation
+	DetailPrint "Installing documentation..."
+	SetDetailsPrint textonly
+	SetOutPath $INSTDIR\docs
+	File /r docs\*.html
+	SetDetailsPrint both
 
 	# Install uninstaller program
 	DetailPrint "Installing uninstaller..."
