@@ -6,10 +6,10 @@ import string
 import threading
 
 # Howie-specific
+import aiml
 import configFile
 import frontends
 from frontends import *
-from backends import *
 
 class ActiveFrontEnd:
 	def __init__(self, inst, thread):
@@ -17,7 +17,7 @@ class ActiveFrontEnd:
 		self.__thread = thread
 
 __frontends = {}
-__backends = {}
+__kernel = None
 def __addFrontEnd(name, cls):
 	global __frontends
 	
@@ -36,12 +36,14 @@ def __addFrontEnd(name, cls):
 
 
 def init():
+	global __kernel
 	"Initialize the front-ends and back-ends."
 	# Fetch the configuration info
 	config = configFile.get()
 	
-	# Initialize the backends	
-	jalice.bootstrap()
+	# Initialize the AIML interpreter	
+	__kernel = aiml.Kernel()
+	__kernel.bootstrap(learnFiles="std-startup.xml", commands="bootstrap")
 	
 	# Handle local mode: only start the tty frontend
 	if config['cla.localMode'] == "yes":
@@ -77,4 +79,4 @@ def init():
 def submit(input, user):
 	"Submits a statement to the back-end. Returns the response to the statement."
 	
-	return jalice.respond(input, user)
+	return __kernel.respond(input, user)

@@ -11,8 +11,6 @@ import sys
 import ConfigParser
 from howie import frontends
 from frontends import *
-from howie import backends
-from backends import *
 
 # Load default values for various config-file options.
 # The defaults are scattered throughout the frontend and
@@ -25,7 +23,7 @@ configDefaults = {
     "general.botmaster":	"Your Name",
     "general.maxdelay":     "0"
     }
-for package in ['frontends', 'backends']:
+for package in ['frontends']:
     for name in eval("%s.__all__" % package):
         mod = eval("%s.%s" % (package, name))
         try: defaults = mod.configDefaults
