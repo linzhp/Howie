@@ -9,7 +9,7 @@ import frontend
 # default config file values for this module
 configDefaults = {
 	"aim.active":			"no",
-	"aim.screenname":		"cortserver",
+	"aim.screenname":		"botname",
 	"aim.password":			"changeme",
 	"aim.profile":			"Your profile goes here."
 	}

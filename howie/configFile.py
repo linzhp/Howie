@@ -22,7 +22,7 @@ from backends import *
 # one master copy.
 configDefaults = {
     "general.botname":		"Howie",
-    "general.botmaster":	"Cort Stratton",
+    "general.botmaster":	"Your Name",
     "general.maxdelay":     "0"
     }
 for package in ['frontends', 'backends']:
