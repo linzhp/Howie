@@ -1,10 +1,15 @@
- - Upgraded AIML interpreter to PyAIML version 0.8.1.
+1/10/2004:
+ - Upgraded AIML interpreter to PyAIML version 0.8.1.  Fixes a problem with "system"
+   tags written for Windows not working on UNIX, and vice versa.  For cross-platform
+   compatibility, all "system" tags should use UNIX-style pathnames (e.g.
+   "path/to/script").
  - Added "unix-install.py" helper script to automate some necessary setup steps on UNIX
    platforms.
  - Removed some Python 2.3-specific features; Howie should now run on Python 2.2.x.
  - Howie now prompts for screenname/password at startup if the values aren't specified
    in the config file (useful for those who don't like leaving passwords lying around
    in plaintext on disk).
+ - Reorganized and commented configuration file.
 
 1/9/2004:
  - Upgraded AIML interpreter to PyAIML version 0.8.
