@@ -31,12 +31,13 @@ void SocketHandler::runLoop() {
 	Socket *sock;
 	int socket, result;
 	
+	unsigned int ix=0, iy=0;
 	while (!sockets.empty()) {
 		fd_set input_sockets;
 		unsigned int sz = sockets.size();
 
 		FD_ZERO(&input_sockets);
-		for (unsigned int ix = 0; ix < sz; ++ix) {
+		for (ix = 0; ix < sz; ++ix) {
 			sock = sockets[ix];
 			if (sock != NULL) {
 				socket = sock->getSD();
@@ -67,7 +68,7 @@ void SocketHandler::runLoop() {
 				return;	//	I guess this is right afterall
 				//	Otherwise get stuck in an infinite loop...
 		}
-		for (unsigned int ix = 0; ix < sz; ++ix) {
+		for (ix = 0; ix < sz; ++ix) {
 			sock = sockets[ix];
 			if (sock != NULL) {
 				socket = sock->getSD();

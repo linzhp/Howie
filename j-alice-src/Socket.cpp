@@ -88,7 +88,7 @@ Socket::~Socket() {
 //			SocketHandler::sockets[ix] = NULL;
 //		}
 //	}
-	delete [] host;
+	delete [] const_cast<char*>(host);
 	host = NULL;
 }
 

@@ -100,6 +100,7 @@ Record **Database::Select(const string &id, bool *get, const string &from, bool 
 		return rset;
 	}
 	
+	unsigned int ix=0, iy=0, iz=0;
 	table &workTable = (*d.find(from)).second;
 	
 	if (workTable.find(id) == workTable.end()) {
@@ -113,18 +114,19 @@ Record **Database::Select(const string &id, bool *get, const string &from, bool 
 	Record **resultSet = new Record*[workRecord.size() + 1];
 	int count = -1;
 	
-	for (unsigned int iz = 0; iz < workRecord.size(); ++iz) {
+	for (iz = 0; iz < workRecord.size(); ++iz) {
 		if (workRecord[iz] == NULL) {
 			goto outerSelect;
 		}
-		for (unsigned int ix = 0; ix < 7; ++ix) {
+		
+		for (ix = 0; ix < 7; ++ix) {
 			if (where[ix] && values->data[ix] != (*workRecord.find(iz)).second->data[ix]) {
 				goto outerSelect;
 			}
 		}
 		++count;
 		resultSet[count] = new Record();
-		for (unsigned int iy = 0; iy < 7; ++iy) {
+		for (iy = 0; iy < 7; ++iy) {
 			if (get[iy]) {
 				resultSet[count]->data[iy] = (*workRecord.find(iz)).second->data[iy];
 			}
@@ -188,6 +190,7 @@ void Database::Update(const string &id, const string &name, bool *set, Record *t
 		throw(DatabaseException("Update: no table (" + name + ")"));
 	}
 	
+	unsigned int iz = 0;
 	table &workTable = (*d.find(name)).second;
 	if (workTable.find(id) == workTable.end()) {
 		throw(DatabaseException("Update: no id (" + id + ")"));
@@ -201,7 +204,7 @@ void Database::Update(const string &id, const string &name, bool *set, Record *t
 				goto outerUpdate;
 			}
 		}
-		for (unsigned int iz = 0; iz < 7; ++iz) {
+		for (iz = 0; iz < 7; ++iz) {
 			if (set[iz]) {
 				workRecord[ix]->data[iz] = to->data[iz];
 			}

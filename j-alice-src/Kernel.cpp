@@ -113,6 +113,7 @@ string templateString(PElement element) {
 }
 
 void prettyPrintHeader(const string &filename, int size, int totalSize, long time) {
+	int ix=0, iy=0;
 	string fn = filename;
 	string::size_type f = fn.find_last_of("\\/:");
 	if (f != string::npos) {
@@ -122,31 +123,31 @@ void prettyPrintHeader(const string &filename, int size, int totalSize, long tim
 	if (fn.length() >= 20) {
 		cout << endl << "                            ";
 	} else {
-		for (int ix = 0; ix < 20 - fn.length(); ++ix) {
+		for (ix = 0; ix < 20 - fn.length(); ++ix) {
 			cout << " ";
 		}
 	}
 	int len = 0;
-	for (int iy = size; iy > 0 && len < 6; iy = iy / 10) {
+	for (iy = size; iy > 0 && len < 6; iy = iy / 10) {
 		++len;
 	}
-	for (int ix = 0; ix < 6 - len; ++ix) {
+	for (ix = 0; ix < 6 - len; ++ix) {
 		cout << " ";
 	}
 	cout << size << " categories";
 	len = 0;
-	for (int iy = totalSize; iy > 0 && len < 6; iy = iy / 10) {
+	for (iy = totalSize; iy > 0 && len < 6; iy = iy / 10) {
 		++len;
 	}
-	for (int ix = 0; ix < 10 - len; ++ix) {
+	for (ix = 0; ix < 10 - len; ++ix) {
 		cout << " ";
 	}
 	cout << totalSize << " total";
 	len = 0;
-	for (int iy = (int)time; iy > 0 && len < 6; iy = iy / 10) {
+	for (iy = (int)time; iy > 0 && len < 6; iy = iy / 10) {
 		++len;
 	}
-	for (int ix = 0; ix < 6 - len; ++ix) {
+	for (ix = 0; ix < 6 - len; ++ix) {
 		cout << " ";
 	}
 	if (len != 0) {
