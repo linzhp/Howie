@@ -27,15 +27,38 @@ Howie's knowledge base is made up of a wide variety of Internet resources.
 If you find something that he can't do, it's usually pretty straightforward
 to teach him!
 
-INSTALLATION
-------------
+INSTALLATION (Windows binary distribution)
+------------------------------------------
 1. Run the installer (you've done that).
 2. Edit the howie.ini file, found in the directory where you installed Howie.
+   (You can access this file through the "Howie->Configure Howie" shortcut in
+   your Start Menu).  This file lets you set up the interfaces presented to
+   visitors (AIM, MSN, etc.) as well as customize Howie's behavior.  Each
+   section has an "active" parameter, which indicates whether that module is
+   active ("yes") or not.
+3. To test Howie in local-mode (text console interface only), use the
+   "Howie->Run Howie (local)" shortcut in your Start Menu.  This will let you
+   chat with Howie without opening any connections to the Internet.
+4. Once you're satisfied with your setup, run the "Howie->Run Howie" shortcut,
+   found in your Start Menu.  This launches Howie and makes him available to
+   world at large!
+
+INSTALLATION (Source distribution)
+----------------------------------
+1. Unzip the archive (you've done that).
+2. UNIX USERS: run the "unix-install.py" script found in the main Howie
+   directory.  It will automatically configure Howie to run in a UNIX-like
+   environment.
+3. Edit the howie.ini file, found in the directory where you installed Howie.
    This file lets you set up the interfaces presented to visitors (AIM, MSN,
    etc.) as well as customize Howie's behavior.  Each section has an "active"
    parameter, which indicates whether that module is active ("yes") or not.
-3. Run the "Howie\Run Howie" shortcut, found in your start menu.
-
+4. To test Howie locally, run "runme.py -l" in the main Howie directory.
+   This lets you chat with Howie without activating any of his network
+   services.
+5. Once you're satisfied with your setup, run "runme.py" in the main Howie
+   directory.  This launches Howie and makes him available to the world at
+   large!
 
 ACKNOWLEDGEMENTS
 ----------------
@@ -51,7 +74,6 @@ Wallace's A.L.I.C.E. system. For more information about the A.L.I.C.E.
 Foundation (including information on AIML, the Artificial Intelligence
 Markup Language used to program Howie's responses), visit the A.L.I.C.E.
 homepage at http://www.alicebot.org/. 
-
 
 Howie's AIM front-end is provided by Py-TOC (http://www.jamwt.com/Py-TOC/).
 
