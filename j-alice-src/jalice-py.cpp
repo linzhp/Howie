@@ -160,7 +160,7 @@ void bootstrap(void)
   _popd();
 }
 
-string respond(string sInput, string sId)
+string respond(const string sInput, const string sId)
 {
     // Get the configuration directory.
     string sHome;
