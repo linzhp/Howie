@@ -11,7 +11,10 @@ class Googlismer:
 	def __init__(self):
 		self.__cmdRegex = re.compile("(?P<qtype>who|what|where|when) (?P<verb>is|are|was|were) (?P<query>[^?]+)", re.I)
 		self.__cacheFile = "googlism_cache"
-		self.__cache = shelve.open(self.__cacheFile, protocol=2)
+		try: self.__cache = shelve.open(self.__cacheFile, protocol=2)
+		except TypeError:
+			# pre-2.3 didn't have a protocol argument.
+			self.__cache = shelve.open(self.__cacheFile)
 		self.__cacheMutex = mutex.mutex()
 		self.__cacheKeys = self.__cache.keys()
 	

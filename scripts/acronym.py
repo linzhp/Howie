@@ -37,7 +37,7 @@ def parse(f, acro, max=-1):
     defOnNextLine = False
     linenum = 0
     found = []
-    for line in f:
+    for line in f.readlines():
         # If we've found the maximum number of matches,
         # stop now.
         if max >= 0 and len(found) >= max:
