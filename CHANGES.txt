@@ -1,6 +1,7 @@
  - Upgraded to PyAIML version 0.8.5.  This version includes standards-compliant
    whitespace handling, and fixes a handful of Unicode and crash bugs.
- - JABBER: Upgraded to xmpppy 0.2pre1.
+ - JABBER: Upgraded to xmpppy 0.2pre2.
+ - JABBER: Removed hard-coded port number, and put it in howie.ini instead.
 
 0.6.0:
  - Upgraded to PyAIML version 0.8.4.  This version includes support for

@@ -24,6 +24,7 @@ configDefaults = {
     "jabber.username":      "",
     "jabber.password":      "",
     "jabber.server":        "jabber.org",
+    "jabber.port":          "5222",
     "jabber.resource":      "default",
     "jabber.nickname":      "Howie",
 }
@@ -47,6 +48,11 @@ class FrontEndJabber(frontend.IFrontEnd):
             if server == "": raise KeyError
         except KeyError: server = raw_input("Jabber Server: ")
         try:
+            try: server_port = int(config['jabber.port'])
+            except ValueError: server_port = ""
+            if server_port == "": raise KeyError
+        except KeyError: server_port = raw_input("Jabber Port: ")
+        try:
             resource = config['jabber.resource']
             if resource == "": raise KeyError
         except KeyError: resource = raw_input("Jabber Resource: ")
@@ -60,27 +66,28 @@ class FrontEndJabber(frontend.IFrontEnd):
         try: self._maxdelay = int(config['general.maxdelay'])
         except KeyError: self._maxdelay = 0
 
-        # Connect to server through SSL
-        self._con = xmpp.Client(server, port=5223, debug=None)
-        if not self._con.connect(server=(server,5223)):
-            sys.stderr.write("JABBER: Couldn't connect to %s: network error\n" % server)
+        # Connect to server
+        self._con = xmpp.Client(server, port=server_port, debug=None)
+        if not self._con.connect(server=(server,server_port)):
+            sys.stderr.write("JABBER: Couldn't connect to %s(%d): network error\n" % (server,server_port))
             return
+        print "JABBER CONNECTED"
 
         # Register event handlers
         self._con.RegisterHandler('message',self._messageCB)
         self._con.RegisterHandler('presence',self._presenceCB)
         self._con.RegisterHandler('iq',self._iqCB)
-        
+        print "JABBER REGISTERED HANDLERS"        
         # Log in
         if self._con.auth(username,password,resource):
             pass
         else:
             print "JABBER ERROR: login failed:", self._con.lastErr, self._con.lastErrCode
             return
-
+        print "JABBER LOGGED IN"
         # Request roster
         self._con.sendInitPresence(1)
-
+        print "JABBER SENT PRESENCE"
         
     def go(self):
         while True:
