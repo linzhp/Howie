@@ -4,6 +4,7 @@ import glob
 import py2exe
 
 setup(name="Howie",
+    version="0.6.0",
     author="Cort Stratton",
     author_email="cort@users.sourceforge.net",
     description="Howie The Chatterbot",
