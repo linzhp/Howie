@@ -1,1 +1,1 @@
-__all__ = ["aim", "jabberchat", "msn", "tty", "xmlrpc"]
+__all__ = ["aim", "irc", "jabberchat", "msn", "tty", "xmlrpc"]

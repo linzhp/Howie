@@ -20,9 +20,9 @@ synonyms for any word in the dictionary, query your address book, and even
 perform a few simple remote system-administration tasks!
 
 Howie is Connected.
-You can communicate with Howie in a number of different ways: AIM, MSN
+You can communicate with Howie in a number of different ways: AIM, IRC, MSN
 Messenger, Jabber Chat, XML-RPC, or locally on the command-line. Future
-versions will include interfaces for HTTP, IRC, ICQ, Zephyr, and more!
+versions will include interfaces for HTTP, ICQ, Zephyr, and more!
 Howie's knowledge base is made up of a wide variety of Internet resources.
 If you find something that he can't do, it's usually pretty
 straightforward to teach him!
@@ -87,6 +87,10 @@ Markup Language used to program Howie's responses), visit the A.L.I.C.E.
 homepage at http://www.alicebot.org/. 
 
 Howie's AIM front-end is provided by Py-TOC (http://www.jamwt.com/Py-TOC/).
+
+Howie's IRC front-end was written by Jamie Turner (author of Py-TOC), and is
+built on top of Joel Rosdahl's Python IRC library
+(http://python-irclib.sourceforge.net/).
 
 Howie's MSN front-end is provided by msnp, a Python MSN module by Manish
 Jethani (http://msnp.sourceforge.net/). 
