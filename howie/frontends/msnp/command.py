@@ -38,7 +38,9 @@ class Command:
         if s == None or len(s) <= 0: return
         self.cmd, pos = s[pos], pos + 1
         if len(s) <= pos: return
-        if self.cmd in ('NLN', 'FLN'):
+        if self.cmd in ('NLN', 'FLN',
+            'GTC', 'BLP', 'PRP', 'LSG', 'LST',
+            'BPR'):
             self.trn = 0
         else:
             self.trn, pos = int(s[pos]), pos + 1

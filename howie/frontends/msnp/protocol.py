@@ -40,6 +40,13 @@ class PrivacyModes:
     ALLOW = 'AL'
     BLOCK = 'BL'
 
+list_flags = {
+    Lists.FORWARD : 1,
+    Lists.ALLOW   : 2,
+    Lists.BLOCK   : 4,
+    Lists.REVERSE : 8,
+}
+
 errors = {
     '200': 'Syntax error',
     '201': 'Invalid parameter',

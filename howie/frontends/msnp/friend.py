@@ -62,13 +62,17 @@ class Group:
 class Friend:
     """A friend in the friend list"""
     def __init__(self, passport_id, display_name,
-        state = States.OFFLINE, group = None):
+        state = States.OFFLINE, groups = None):
 
         self.passport_id = passport_id
         self.display_name = display_name
         self.state = state
-        self.group = None
-        self.set_group(group)
+        self.groups = {}
+
+        if groups == None:
+            groups = ()
+        for g in groups:
+            self.add_to_group(g)
 
     def get_passport_id(self):
         """Return friend's passport ID"""
@@ -82,16 +86,19 @@ class Friend:
         """Return friend's presence state"""
         return self.state
 
-    def get_group(self):
-        """Return msnp.Group instance representing friend's group"""
-        return self.group
+    def get_groups(self):
+        """Return msnp.Group instances representing friend's groups"""
+        return self.groups.values()
 
-    def set_group(self, group):
-        if self.group != None:
-            del self.group.friends[self.passport_id]
-        self.group = group
-        if group != None:
-            group.friends[self.passport_id] = self
+    def add_to_group(self, group):
+        """Add friend to given group"""
+        group.friends[self.passport_id] = self
+        self.groups[group.id] = group
+
+    def remove_from_group(self, group):
+        """Remove friend from given group"""
+        del group.friends[self.passport_id]
+        del self.groups[group.id]
 
 class FriendList:
     """Friend list

@@ -24,7 +24,7 @@ from binascii import hexlify, unhexlify
 from time import time
 
 from protocol import States, Lists, PrivacyModes
-from error import Error
+from error import Error, HttpError
 from friend import Group, Friend, FriendList
 from net import Connection, HttpProxyConnection
 from command import Command, Msg, Png, Qry
@@ -234,8 +234,8 @@ class Session(_Session):
         res = con.getresponse()
         con.close()
         if res.status != 200:
-            raise (0, 'Bad response from passport nexus server: ' \
-                + str((res.status, res.reason)))
+            raise HttpError(0, 'Bad response from passport nexus server.',
+                res.status, res.reason)
         hdr = res.getheader('PassportURLs')
         url = {}
         for u in hdr.split(','):
@@ -257,8 +257,8 @@ class Session(_Session):
             res = con.getresponse()
             con.close()
             if res.status != 200:
-                raise (0, 'Bad response from login server: ' \
-                    + str((res.status, res.reason))) # XXX handle redirection?
+                raise HttpError(0, 'Bad response from login server.',
+                    res.status, res.reason) # XXX handle redirection?
             else:
                 break
         hdr = res.getheader('Authentication-Info') or \
@@ -311,7 +311,7 @@ class Session(_Session):
                 if resp.cmd != 'USR':
                     raise Error(int(resp.cmd), protocol.errors[resp.cmd])
                 elif resp.args[0] != 'OK':
-                    raise (0, 'Bad response for USR command.')
+                    raise Error(0, 'Bad response for USR command.')
 
                 self.passport_id = resp.args[1]
                 self.display_name = url_codec.decode(resp.args[2])
@@ -473,13 +473,8 @@ class Session(_Session):
         self._async_command(qry)
 
     def __process_lsg(self, command):
-        ver = int(command.args[0])
-        index = int(command.args[1])
-        total = int(command.args[2])
-        id = int(command.args[3])
-        name = url_codec.decode(command.args[4])
-
-        self.friend_list.ver = ver
+        id = int(command.args[0])
+        name = url_codec.decode(command.args[1])
 
         group = Group(id, name)
         self.friend_list.groups[id] = group
@@ -487,34 +482,29 @@ class Session(_Session):
         self.__friend_list_updated()
 
     def __process_lst(self, command):
-        ver = int(command.args[1])
-        list_ = command.args[0]
-        index = int(command.args[2])
-        total = int(command.args[3])
-        passport_id = None
-        display_name = None
-        group_id = -1
+        from protocol import list_flags
 
-        self.friend_list.ver = ver
+        passport_id  = command.args[0]
+        display_name = url_codec.decode(command.args[1])
+        list_        = int(command.args[2])
+        group_id     = []
 
-        if list_ == Lists.FORWARD:
-            group_id = int(command.args[6])
+        if list_ & list_flags[Lists.FORWARD]:
+            group_id = [int(i) for i in split(command.args[3], ',')]
 
-        if index != 0:
-            passport_id = command.args[4]
-            display_name = url_codec.decode(command.args[5])
+        groups = None
+        if len(group_id):
+            groups = [self.friend_list.groups[g_id] for g_id in group_id]
 
-            group = None
-            if group_id != -1:
-                group = self.friend_list.groups[group_id]
+        friend = Friend(passport_id, display_name, groups = groups)
+        for f in list_flags.keys():
+            if list_ & list_flags[f]:
+                self.friend_list.lists[f][passport_id] = friend
 
-            friend = Friend(passport_id, display_name, group = group)
-            self.friend_list.lists[list_][passport_id] = friend
+        if self.friend_list.temp_iln.has_key(passport_id):
+            friend.state = self.friend_list.temp_iln[passport_id]
 
-            if self.friend_list.temp_iln.has_key(passport_id):
-                friend.state = self.friend_list.temp_iln[passport_id]
-
-            self.__friend_list_updated()
+        self.__friend_list_updated()
 
     def __process_syn(self, command):
         ver = int(command.args[0])
@@ -532,16 +522,12 @@ class Session(_Session):
         self.callbacks.chat_started(chat_)
 
     def __process_blp(self, command):
-        ver = int(command.args[0])
-        privacy_mode = command.args[1]
-        self.friend_list.ver = ver
+        privacy_mode = command.args[0]
         self.friend_list.privacy_mode = privacy_mode
         self.__friend_list_updated()
 
     def __process_gtc(self, command):
-        ver = int(command.args[0])
-        notify_on_add = command.args[1] == 'A'
-        self.friend_list.ver = ver
+        notify_on_add = command.args[0] == 'A'
         self.friend_list.notify_on_add_ = notify_on_add
         self.__friend_list_updated()
 
@@ -583,8 +569,17 @@ class Session(_Session):
             group = self.friend_list.groups[int(command.args[4])]
 
         self.friend_list.ver = ver
-        self.friend_list.lists[list_][passport_id] = Friend(
-            passport_id, passport_id, group = group)
+ 
+        friend = self.friend_list.get_friend(passport_id, list_)
+        if friend != None:
+            friend.add_to_group(group)
+        else:
+            if group != None:
+                friend = Friend(passport_id, passport_id, (group))
+            else:
+                friend = Friend(passport_id, passport_id)
+            self.friend_list.lists[list_][passport_id] = friend
+
         self.__friend_list_updated()
 
         if group != None:
@@ -602,11 +597,13 @@ class Session(_Session):
             group = self.friend_list.groups[int(command.args[3])]
 
         self.friend_list.ver = ver
-        if self.friend_list.lists[list_].has_key(passport_id):
-            del self.friend_list.lists[list_][passport_id]
 
-        if group != None and group.friends.has_key(passport_id):
-            del group.friends[passport_id]
+        friend = self.friend_list.get_friend(passport_id, list_)
+        if friend != None: # this shouldn't be None, unless friend_list stale
+            if group != None:
+                friend.remove_from_group(group)
+            if len(friend.get_groups()) == 0:
+                del self.friend_list.lists[list_][passport_id]
 
         self.__friend_list_updated()
         if group != None:
