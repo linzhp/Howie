@@ -21,11 +21,11 @@ perform a few simple remote system-administration tasks!
 
 Howie is Connected.
 You can communicate with Howie in a number of different ways: AIM, MSN
-Messenger, XML-RPC, or locally on the command-line. Future versions will
-include interfaces for HTTP, IRC, ICQ, Zephyr, and more! Howie's knowledge
-base is made up of a wide variety of Internet resources. If you find
-something that he can't do, it's usually pretty straightforward to teach
-him!
+Messenger, Jabber Chat, XML-RPC, or locally on the command-line. Future
+versions will include interfaces for HTTP, IRC, ICQ, Zephyr, and more!
+Howie's knowledge base is made up of a wide variety of Internet resources.
+If you find something that he can't do, it's usually pretty
+straightforward to teach him!
 
 SYSTEM REQUIREMENTS
 -------------------
@@ -90,6 +90,9 @@ Howie's AIM front-end is provided by Py-TOC (http://www.jamwt.com/Py-TOC/).
 
 Howie's MSN front-end is provided by msnp, a Python MSN module by Manish
 Jethani (http://msnp.sourceforge.net/). 
+
+Howie's Jabber front-end is provided by jabber.py, a Python Jabber module by
+Matthew Allum (http://jabberpy.sourceforge.net).
 
 Howie is named after Howie Day (http://www.howieday.com/), for no particular
 reason.  If it weren't for Amy Kalson, he would be named something truly boring
