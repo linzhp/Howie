@@ -7,7 +7,7 @@
 
 #include <fstream>
 #include <iostream>
-#include <strstream>
+#include <sstream>
 
 #include "Match.h"
 #include "Utils.h"
@@ -684,7 +684,7 @@ string Kernel::respond(const string &input, const string &id, Responder *r, int,
 			    cerr << "FILENAME: " << m->getNode()->getActualTemplate()->getFilename() << endl;
             }			
 			string tmpl = "<template>" + m->getTemplate() + "</template>";
-			strstream ss;
+			std::stringstream ss;
 			ss << tmpl << endl;
 			
 			SaxParser *p = new SaxParser(new Parser());

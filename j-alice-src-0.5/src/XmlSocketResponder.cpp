@@ -10,7 +10,7 @@
 // #include <sstream>
 // #define stringstream strstream
 //#else
- #include <strstream>
+ #include <sstream>
 //#endif
 
 using namespace std;
@@ -52,7 +52,7 @@ string XmlSocketResponder::respond(Match *, PElement, const string &) {
 }
 
 void XmlSocketResponder::recv(string &s) {
-	strstream strs;
+	stringstream strs;
 	strs << s << endl;
 	SaxParser *parser = new SaxParser(new Parser());
 	parser->parse(strs);

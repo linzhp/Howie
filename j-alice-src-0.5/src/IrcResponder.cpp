@@ -8,7 +8,7 @@
 #include "Logger.h"
 #include "TimeKeeper.h"
 
-#include <strstream>
+#include <sstream> // not safe on BSD
 #include <iostream>
 
 #ifndef WIN32

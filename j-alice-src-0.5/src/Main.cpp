@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <strstream>
+#include <sstream>
 #include <iterator>
 #include <algorithm>
 #include <stdio.h>
@@ -199,7 +199,7 @@ void process(string &s, int ss, string &p, string &v) {
 		}
 	}
 	else if (p == "Nicks") {
-		strstream nicks; nicks << v;
+		stringstream nicks; nicks << v;
 		string str;
 		while (!nicks.eof()) {
 			getline(nicks, str, ',');
@@ -207,7 +207,7 @@ void process(string &s, int ss, string &p, string &v) {
 		}
 	}
 	else if (p == "Channels") {
-		strstream channels; channels << v;
+		stringstream channels; channels << v;
 		string str;
 		while (!channels.eof()) {
 			getline(channels, str, ',');
