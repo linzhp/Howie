@@ -18,7 +18,7 @@ frontEndClass = "FrontEndTTY"
 # be activated.
 configDefaults = {
     "tty.active":       "yes"
-    }	
+    }
 
 class FrontEndTTY(frontend.IFrontEnd):
     """
