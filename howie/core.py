@@ -1,3 +1,4 @@
+import marshal
 import os
 import os.path
 import pyclbr
@@ -25,7 +26,7 @@ def _addFrontEnd(name, cls):
 	
 	# verbose output
 	config = configFile.get()
-	if config['cla.verboseMode'] == "yes":
+	if config['cla.verboseMode'] in ["yes", "y", "true"]:
 		print "Creating %s front-end using class %s" % (name, cls)
 	
 	# Instantiate the frontend object
@@ -46,15 +47,50 @@ def init():
 	# Initialize the AIML interpreter
 	print "Initializing AIML interpreter (please be patient)..."
 	kernel = aiml.Kernel()
-	kernel.persistentSessions(True, sessionsDir="sessions")
-	kernel.verbose(config["general.verbose"] == "yes" or config["cla.verboseMode"] == "yes")
+	#extract config options
+	try: verbose = config["general.verbose"] == "yes" or config["cla.verboseMode"] == "yes"
+	except: verbose = False
+	try: botName = config["general.botname"]
+	except: botName = "Nameless"
+	try: botMaster = config["general.botmaster"]
+	except: botMaster = "The Master"
+	try: sessionsPersist = config["general.sessionspersist"]
+	except: sessionsPersist = False
+	try: sessionsDir = config["general.sessionsdir"]
+	except: sessionsDir = "sessions"
+	
+	# set up the kernel
+	kernel.verbose(verbose)
 	kernel.setPredicate("secure", "yes") # secure the global session
 	kernel.bootstrap(learnFiles="std-startup.xml", commands="bootstrap")
 	kernel.setPredicate("secure", "no") # and unsecure it.
-	kernel.setBotPredicate("name", config["general.botname"])
+	kernel.setBotPredicate("name", botName)
+	kernel.setBotPredicate("botmaster", botMaster)
+
+	# Load persistent session data, if necessary
+	if sessionsPersist:
+		try:
+			for session in os.listdir(sessionsDir):
+				# Session files are named "user@protocol.ses", where
+				# user@protocol is also the internal name of the session.
+				root, ext = os.path.splitext(session)
+				if ext != ".ses":
+					# This isn't a session file.
+					continue
+				# Load the contents of the session file (a single dictionary
+				# containing all the predicates for this session).
+				if verbose: print "Loading session:", root
+				f = file("%s/%s" %(sessionsDir, session), "rb")
+				d = marshal.load(f)
+				f.close()
+				# update the predicate values in the Kernel.
+				for k,v in d.items():
+					kernel.setPredicate(k,v,root)
+		except OSError:
+			print "WARNING: Error loading session data from", sessionsDir
 	
 	# Handle local mode: only start the tty frontend
-	if config['cla.localMode'] == "yes":
+	if config['cla.localMode'].lower() in ["yes", "y", "true"]:
 		_addFrontEnd("tty", "FrontEndTTY")
 	else:
 		# Initialize the front-ends.  Pythonic black magic ensues...
@@ -62,7 +98,7 @@ def init():
 		for fe in frontends.__all__:
 			# If this frontend isn't activated in the configuration file,
 			# ignore it.
-			try: isActive = (config["%s.active" % fe] == "yes")
+			try: isActive = (config["%s.active" % fe].lower() in ["yes", "y", "true"])
 			except KeyError:
 				print "WARNING: no 'active' entry found for module %s in configuration file." % fe
 				isActive = False
@@ -86,10 +122,11 @@ def init():
 def submit(input, session):
 	"Submits a statement to the back-end. Returns the response to the statement."
 	response = kernel.respond(input, session)
+
+	config = configFile.get()	
 	# if logging is enabled, write the input and response to the log.
 	try:
-		config = configFile.get()
-		if config["general.logging"] in ['yes', 'y', 'true']:
+		if config["general.logging"].lower() in ["yes", "y", "true"]:
 			logdir = config["general.logdir"]
 			if not os.path.isdir(logdir): os.mkdir(logdir)
 			logfile = file("%s/%s.log" % (logdir, session), "a")
@@ -97,6 +134,17 @@ def submit(input, session):
 			logfile.write("%s: %s\n" % (session, input))
 			logfile.write("%s: %s\n" % (kernel.getBotPredicate("name"), response))
 			logfile.close()			
-	except:
+	except KeyError:
+		pass
+
+	# If persistent sessions are enabled, store the session data.
+	try:
+		if config["general.sessionspersist"].lower() in ["yes", "y", "true"]:
+			sessionsdir = config["general.sessionsdir"]
+			if not os.path.isdir(sessionsdir): os.mkdir(sessionsdir)
+			sessionfile = file("%s/%s.ses" % (sessionsdir, session), "wb")
+			marshal.dump(kernel.getSessionData(session), sessionfile)
+			sessionfile.close()
+	except KeyError:
 		pass
 	return response
