@@ -63,7 +63,7 @@ class FrontEndJabber(frontend.IFrontEnd):
         # Connect to server through SSL
         self._con = xmpp.Client(server, port=5223, debug=None)
         if not self._con.connect(server=(server,5223)):
-            sys.stderr.write("JABBER: Couldn't connect to %s: %s\n" % (server,e))
+            sys.stderr.write("JABBER: Couldn't connect to %s: network error\n" % server)
             return
 
         # Register event handlers
