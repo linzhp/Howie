@@ -28,6 +28,8 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 		toc.TocTalk.__init__(self, screenname, password)
 		try: self._info = config['aim.profile']
 		except KeyError: self._info = "No profile."
+		try: self._maxdelay = int(config['general.maxdelay'])
+		except KeyError: self._maxdelay = 0
 
 	def start(self):
 		"Do stuff here immediately after the bot connects."
@@ -38,7 +40,7 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 		"Sends output as an IM to the specified user."
 		self.do_SEND_IM(user, output)
 
-	def __updateConfig(self):
+	def _updateConfig(self):
 		"Saves our current configuration (buddy list, etc.) back to the server."
 		# Create a TOC-style CONFIG string
 		newConfig = "m 1\ng Buddies\n"
@@ -46,23 +48,23 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 			newConfig += "b " + buddy + "\n"
 		self.do_SET_CONFIG(newConfig)
 
-	def __addBuddy(self, newBuddy):
+	def _addBuddy(self, newBuddy):
 		"Add a new buddy, both locally and remotely."
 		if self._buddyList.count(newBuddy) > 0:
 			# Buddy already in list.
 			return
 		self.do_ADD_BUDDY(list(newBuddy))
-		self.__buddyList.append(newBuddy)
-		self.__updateConfig()
+		self._buddyList.append(newBuddy)
+		self._updateConfig()
 
-	def __removeBuddy(self, oldBuddy):
+	def _removeBuddy(self, oldBuddy):
 		"Remove an existing buddy from the buddy list."
 		if self._buddyList.count(oldBuddy) == 0:
 			# No such buddy.
 			return
 		self.do_REMOVE_BUDDY(list(oldBuddy))
-		self.__buddyList.remove(oldBuddy)
-		self.__updateConfig()
+		self._buddyList.remove(oldBuddy)
+		self._updateConfig()
 
 	### AIM event handlers follow
 
@@ -86,10 +88,11 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 		message = self.strip_html(data_components[2])
 
 		# Send a reply.
-		# Insert a random delay of 0-4 seconds before replying.
+		# Insert a random delay of 0-maxdelay seconds before replying.
 		if not bAutoResponse:
-			time.sleep( random.random() * 4 )
-			self.display(self.submit(message, screenname), screenname)
+			time.sleep( random.random() * self._maxdelay )
+			response = self.submit(message, screenname+"@AIM")
+			self.display(response, screenname)
 
 		
 	# Called when there's an incoming user configuration (our
@@ -100,7 +103,7 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 	# value. Only letters, numbers, and spaces should be used.
 	def on_CONFIG(self, data):
 		# first time logging in--add buddies from config...
-		self.__buddyList = []
+		self._buddyList = []
 		budsToAdd = []
 		
 		# remember the format of config data here:
@@ -115,14 +118,14 @@ class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 			#add no more than ~20 at a time, msg len restrictions
 			if len(budsToAdd) == 20:
 				self.do_ADD_BUDDY(budsToAdd)
-				self.__buddyList.extend(budsToAdd)
+				self._buddyList.extend(budsToAdd)
 				time.sleep(0.2) # don't SLAM the server...
 				budsToAdd = []
 
 		# Clean up any leftovers.
 		if len(budsToAdd) > 0:
 			self.do_ADD_BUDDY(budsToAdd)
-			self.__buddyList.extend(budsToAdd)
+			self._buddyList.extend(budsToAdd)
 			budsToAdd = []
 
 	# This command handles arrivals, departures, and updates of
