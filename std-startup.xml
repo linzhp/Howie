@@ -70,7 +70,8 @@ Thanks for using J-ALICE!
 <pattern>LOAD AIML B</pattern>
 <template>
 <secure>
-<learn>standard/dev-googlism.aiml</learn>
+
+<!-- Load standard AIML set -->
 <learn>standard/std-65percent.aiml</learn>
 <learn>standard/std-atomic.aiml</learn>
 <learn>standard/std-botmaster.aiml</learn>
@@ -105,6 +106,10 @@ Thanks for using J-ALICE!
 <learn>standard/std-that.aiml</learn>
 <learn>standard/std-turing.aiml</learn>
 <learn>standard/std-yesno.aiml</learn>
+
+<!-- Load some Howie-specific AIML files -->
+<learn>standard/dev-googlism.aiml</learn>
+
 </secure>
 </template>
 </category>
