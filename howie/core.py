@@ -121,7 +121,7 @@ def init():
 					_addFrontEnd(fe, cls)
 			except AttributeError:
 				# no class defined in this file.
-				print "WARNING: could not find valid front-end c lass in module %s" % fe
+				print "WARNING: could not find valid front-end class in module %s" % fe
 				continue
 
 def submit(input, session):
