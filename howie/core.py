@@ -54,7 +54,7 @@ def init():
 	except: botName = "Nameless"
 	try: botMaster = config["general.botmaster"]
 	except: botMaster = "The Master"
-	try: sessionsPersist = config["general.sessionspersist"]
+	try: sessionsPersist = config["general.sessionspersist"].lower() in ["yes", "y", "true"]
 	except: sessionsPersist = False
 	try: sessionsDir = config["general.sessionsdir"]
 	except: sessionsDir = "sessions"
