@@ -36,6 +36,10 @@ INSTALLATION
 
 CHANGELOG
 ---------
+11/21/2003: "Return of the Howie Extended Edition" (Dev-20031121) is released
+ - Windows binary distribution is now a self-contained executable.
+   On Windows systems, Python is no longer required to run Howie.
+ - Added documentation folder, mostly pertaining to compiling the sources.
 11/19/2003: "Return Of The Howie" (Dev-20031119) is released
  - Updated Jalice to version 0.5.  See the Jalice homepage for summary
    of new features.
@@ -55,6 +59,9 @@ ACKNOWLEDGEMENTS
 ----------------
 The Win32 installer was produced using the Nullsoft Install System
 (http://www.nullsoft.com/free/nsis/).
+
+The Win32 binary distribution is made possible thanks to py2exe
+(http://starship.python.net/crew/theller/py2exe/).
 
 Howie's conversational back-end is provided by J-Alice (http://j-alice.org/),
 a C++ implementation of Dr. Richard S. Wallace's A.L.I.C.E. system.  For
