@@ -21,8 +21,6 @@ configFileName = "howie.ini"
 # below.  This code merges all the configDefaults into
 # one master copy.
 configDefaults = {
-    "general.botname":		        "Howie",
-    "general.botmaster":	        "Your Name",
     "general.logging":              "no",
     "general.logdir":               "logs",
     "general.maxdelay":             "0",
