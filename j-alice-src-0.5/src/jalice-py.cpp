@@ -4,10 +4,11 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <fcntl.h>
 #include <iostream>
 using std::cerr;
 using std::endl;
-#include <list>
+#include <vector>
 #include <string>
 using std::string;
 #ifdef WIN32
@@ -17,19 +18,18 @@ using std::string;
 #endif
 
 // change to a new directory, saving the old directory to return to later.
-typedef std::list<string> StrList;
-typedef StrList::iterator StrListItor;
-static StrList _dirStack;
+typedef std::vector<int> DirStack;
+static DirStack _dirStack;
 static bool _pushd(const string& sNewDir)
 {
   // Gotta save the old directory first.
-  char cwd[256];
-  if (getcwd(cwd, 256) == NULL)
+  int cwdfd = open(".", O_RDONLY); // open current directory
+  if (cwdfd < 0)
     {
-      cerr << "_pushd: current dir is too long.\n";
+      cerr << "_pushd: error getting current directory.\n";
       return false;
     }
-  _dirStack.push_back(cwd);
+  _dirStack.push_back(cwdfd);
 
   // Change to new directory.
   int retval = chdir(sNewDir.c_str());
@@ -48,14 +48,14 @@ static bool _popd(void)
     return false;
   
   // Retrieve new directory from top of stack.
-  string sNewDir = _dirStack.back();
+  int nNewDirFD = _dirStack.back();
   _dirStack.pop_back();
 
   // go there.
-  int retval = chdir(sNewDir.c_str());
+  int retval = fchdir(nNewDirFD);
   if (retval != 0)
     {
-      cerr << "_pushd: " << sNewDir << " not found.\n";
+      cerr << "_popd: error returning to directory.\n";
       return false;
     }
 
