@@ -2,6 +2,7 @@
  - Arbitrary switch from date-based snapshots to "real" version numbers
  - Upgraded to MSNP 0.4.1.  The MSN front-end is now working!  I'll continue to
    improve it in future releases, but it should be quite usable for now.
+ - Added Jabber chat front-end (based on jabber.py by Matthew Allum).
 
 1/10/2004:
  - Upgraded AIML interpreter to PyAIML version 0.8.1.  Fixes a problem with "system"
