@@ -1,7 +1,11 @@
-1/7/2004:
- - Upgraded AIML interpreter to PyAIML version 0.7.
+1/9/2004:
+ - Upgraded AIML interpreter to PyAIML version 0.8.
  - Upgraded msnp package to v0.4.0 (the frontend still doesn't work, though).
  - Added XMLRPC front-end.
+ - Added support for "what does X stand for" questions (acronym expansion).
+ - Added support for persistent session data (so Howie remembers the people he's
+   talked to even after he's rebooted).  To enable, set "sessionspersist" to "yes"
+   in howie.ini
 
 12/17/2003:
  - New pure-Python AIML interpreter (out with J-Alice, in with PyAIML,
