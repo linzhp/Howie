@@ -7,7 +7,7 @@
 
 # Basic definitions
 !define MUI_PRODUCT "Howie"
-!define MUI_VERSION "20030528"
+!define MUI_VERSION "20031119"
 
 #--------------------------------
 #Configuration
@@ -105,7 +105,7 @@ Section "!Howie (required)" SecCopyMain
 	SetDetailsPrint textonly
 	File runme.py
 	File README.txt
-	File std-startup.aiml
+	File std-startup.xml
 	File substitutions.xml
 	SetOutPath $INSTDIR\howie
 	File howie\__init__.py
