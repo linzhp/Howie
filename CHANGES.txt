@@ -1,19 +1,22 @@
-0.5.1:
- - Added support for the IRC protocol (courtesy of Jamie Turner).
- - Modified jabber back-end to use the xmpppy package, instead of the
-   apparently-defunct jabber.py.
+0.6.0:
  - Upgraded to PyAIML version 0.8.4.  This version includes support for
    multiple wildcards in AIML patterns, the "index" attribute of the "star"
    AIML elements, and Unicode input and AIML files.
  - Improved error-handling during front-end module initialization.  Previously,
    any errors were mistakenly reported as "could not find valid frontend class"
    warnings.
- - Applied patch to msnp module to fix problem with redirect messages while
+ - AIM: Replaced broken PyTOC module with Twisted's OSCAR module.
+ - ICQ: Added support for the ICQ protocol.
+ - IRC: Added support for the IRC protocol (courtesy of Jamie Turner).
+ - JABBER: Modified jabber back-end to use the xmpppy package, instead of the
+   apparently-defunct jabber.py.
+ - MSN: Applied patch to msnp module to fix problem with redirect messages while
    logging in.
- - Fixed bug in msnp's __process_add() function.
- - Fixed bug in MSN frontend's friend-adding code.
- - Wrapped call to register_introspection_functions() to allow it to run
+ - MSN: Fixed bug in msnp's __process_add() function.
+ - MSN: Fixed bug in MSN frontend's friend-adding code.
+ - XMLRPC: Wrapped call to register_introspection_functions() to allow it to run
    without crashing older versions of Python.
+
 
 0.5.0:
  - Arbitrary switch from date-based snapshots to "real" version numbers
