@@ -33,7 +33,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib"
-				OutputFile="..\..\_jalice.dll"
+				OutputFile="..\..\howie\backends\_jalice.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\Program Files\Python\libs"
 				GenerateDebugInformation="TRUE"
@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Installing Python interface..."
-				CommandLine="copy /y jalice.py ..\..\jalice.py"/>
+				CommandLine="copy /y jalice.py ..\..\howie\backends\jalice.py"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -83,7 +83,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib"
-				OutputFile="..\..\_jalice.dll"
+				OutputFile="..\..\howie\backends\_jalice.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\Program Files\Python\libs"
 				GenerateDebugInformation="TRUE"
@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Installing Python interface..."
-				CommandLine="copy /y jalice.py ..\..\jalice.py"/>
+				CommandLine="copy /y jalice.py ..\..\howie\backends\jalice.py"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -188,9 +188,6 @@
 			</File>
 			<File
 				RelativePath="..\jalice-py.cpp">
-			</File>
-			<File
-				RelativePath="..\jalice.cpp">
 			</File>
 			<File
 				RelativePath="..\jalice_wrap.cxx">
