@@ -43,13 +43,18 @@ The Win32 installer was produced using the Nullsoft Install System
 The Win32 binary distribution is made possible thanks to py2exe
 (http://starship.python.net/crew/theller/py2exe/).
 
-Howie's conversational back-end is provided by J-Alice (http://j-alice.org/),
-a C++ implementation of Dr. Richard S. Wallace's A.L.I.C.E. system.  For
-more information about the A.L.I.C.E. Foundation (including information on
-AIML, the Artificial Intelligence Markup Language used to program Howie's
-responses), visit http://www.alicebot.org/.
+Howie's conversational back-end is provided by PyAIML
+(http://pyaiml.sourceforge.net), a Python implementation of Dr. Richard S.
+Wallace's A.L.I.C.E. system. For more information about the A.L.I.C.E.
+Foundation (including information on AIML, the Artificial Intelligence
+Markup Language used to program Howie's responses), visit the A.L.I.C.E.
+homepage at http://www.alicebot.org/. 
+
 
 Howie's AIM front-end is provided by Py-TOC (http://www.jamwt.com/Py-TOC/).
+
+Howie's MSN front-end is provided by msnp, a Python MSN module by Manish
+Jethani (http://msnp.sourceforge.net/). 
 
 Howie is named after Howie Day (http://www.howieday.com/), for no particular
 reason.  If it weren't for Amy Kalson, he would be named something truly boring
