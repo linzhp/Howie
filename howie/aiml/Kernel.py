@@ -7,6 +7,7 @@ from PatternMgr import PatternMgr
 from WordSub import WordSub
 
 from ConfigParser import RawConfigParser
+import glob
 import os
 import random
 import re
@@ -23,9 +24,9 @@ class Kernel:
     _inputHistory = 1     # keys to a queue (list) of recent user input
     _outputHistory = 2    # keys to a queue (list) of recent responses.
 
-    def __init__(self, ):
+    def __init__(self):
         self._verboseMode = True
-        self._version = "0.4.1"
+        self._version = "0.5"
         self._botName = "Nameless"
         self._brain = PatternMgr()
 
@@ -166,17 +167,14 @@ class Kernel:
 
     def setPredicate(self, name, value, sessionID = _globalSessionID):
         "Sets the value of the predicate 'name' in the specified session."
-        try:
-            self._sessions[sessionID][name] = value
-        except:
-            # silently fail if no such session exists
-            if self._verboseMode: print "WARNING: no such sessionID", sessionID
+        self._addSession(sessionID) # add the session, if it doesn't already exist.
+        self._sessions[sessionID][name] = value
 
     def loadSubs(self, filename):
         """Load a substitutions file.  The file must be in the Windows-style INI
 format (see the standard ConfigParser module docs for information on
 this format).  Each section of the file is loaded into its own substituter."""
-        inFile = open(filename)
+        inFile = file(filename)
         parser = RawConfigParser()
         parser.readfp(inFile, filename)
         inFile.close()
@@ -205,20 +203,21 @@ this format).  Each section of the file is loaded into its own substituter."""
             _sessions.pop(sessionID)
 
     def learn(self, filename):
-        "Loads and learns the contents of the specified AIML file."
-        if self._verboseMode: print "Loading %s..." % filename,
-        start = time.clock()
-        # Load and parse the AIML file
-        handler = LearnHandler()
-        xml.sax.parse(filename, handler)
-        
-        # store the pattern/template pairs in the PatternMgr.
-        for key,tem in handler.categories.items():
-            pat,that = key
-            self._brain.add(pat, that, tem)
+        "Loads and learns the contents of the specified AIML file (which may include wildcards)"
+        for f in glob.glob(filename):
+            if self._verboseMode: print "Loading %s..." % f,
+            start = time.clock()
+            # Load and parse the AIML file
+            handler = LearnHandler()
+            xml.sax.parse(f, handler)
+            
+            # store the pattern/template pairs in the PatternMgr.
+            for key,tem in handler.categories.items():
+                pat,that = key
+                self._brain.add(pat, that, tem)
 
-        if self._verboseMode:
-            print "done (%.2f seconds)" % (time.clock() - start)
+            if self._verboseMode:
+                print "done (%.2f seconds)" % (time.clock() - start)
 
     def respond(self, input, sessionID = _globalSessionID):
         "Returns the Kernel's response to the input string."
@@ -538,16 +537,15 @@ this format).  Each section of the file is loaded into its own substituter."""
         # Set atoms processes its contents and assigns the results to
         # a predicate in the specified session.  The predicate to set
         # is specified by the required 'name' attribute of the atom.
+        # The contents of the atom are also returned.
         value = ""
         for a in atom[2:]:
             value += self._processAtom(a, sessionID)
-
-        try:
-            self.setPredicate(atom[1]['name'], value, sessionID)
-        except:
-            # no name attribute, or no such session
-            pass
-        return ""
+        try: self.setPredicate(atom[1]['name'], value, sessionID)
+        except KeyError:
+            if self._verboseMode: print "Missing 'name' attribute in <set> tag"
+            
+        return value
 
     # size
     def _processSize(self,atom, sessionID):
@@ -750,7 +748,7 @@ if __name__ == "__main__":
     
     _testTag(k, 'formal', 'test formal', ["Formal Test Passed"])
     _testTag(k, 'gender', 'test gender', ["He'd told her he heard that her hernia is history"])
-    _testTag(k, 'get/set', 'test get and set', ["My favorite food is cheese"])
+    _testTag(k, 'get/set', 'test get and set', ["I like cheese.  My favorite food is cheese"])
     _testTag(k, 'input', 'test input', ['You just said: test input'])
     _testTag(k, 'lowercase', 'test lowercase', ["The Last Word Should Be lowercase"])
     _testTag(k, 'person', 'test person', ['YOU think me know that my actions threaten you and yours.'])
