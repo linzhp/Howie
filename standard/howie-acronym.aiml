@@ -8,21 +8,21 @@ with the help of an online acronym decoder.
 <category>
 <pattern>WHAT DOES * STAND FOR</pattern>
 <template>
-<system>scripts\acronym.py -f -m 5 "<star/>"</system>
+<system>scripts/acronym.py -f -m 5 "<star/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHAT DOES THE ACRONYM * STAND FOR</pattern>
 <template>
-<system>scripts\acronym.py -f -m 5 "<star/>"</system>
+<system>scripts/acronym.py -f -m 5 "<star/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHAT DOES THE ACRONYM * MEAN</pattern>
 <template>
-<system>scripts\acronym.py -f -m 5 "<star/>"</system>
+<system>scripts/acronym.py -f -m 5 "<star/>"</system>
 </template>
 </category>
 
