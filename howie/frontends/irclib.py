@@ -16,7 +16,7 @@
 #
 # Joel Rosdahl <joel@rosdahl.net>
 #
-# $Id: irclib.py,v 1.1 2004/08/04 16:23:31 cort Exp $
+# $Id: irclib.py,v 1.2 2005/03/31 17:11:52 cort Exp $
 
 """irclib -- Internet Relay Chat (IRC) protocol client library.
 
@@ -74,7 +74,7 @@ import sys
 import time
 import types
 
-VERSION = 0, 4, 2
+VERSION = 0, 4, 4
 DEBUG = 0
 
 # TODO
@@ -194,7 +194,7 @@ class IRC:
         t = time.time()
         while self.delayed_commands:
             if t >= self.delayed_commands[0][0]:
-                apply(self.delayed_commands[0][1], self.delayed_commands[0][2])
+                self.delayed_commands[0][1](*self.delayed_commands[0][2])
                 del self.delayed_commands[0]
             else:
                 break
@@ -410,7 +410,7 @@ class ServerConnection(Connection):
         Returns the ServerConnection object.
         """
         if self.connected:
-            self.quit("Changing server")
+            self.quit("Changing servers")
 
         self.socket = None
         self.previous_buffer = ""
@@ -431,6 +431,8 @@ class ServerConnection(Connection):
             self.socket.bind((self.localaddress, self.localport))
             self.socket.connect((self.server, self.port))
         except socket.error, x:
+            self.socket.close()
+            self.socket = None
             raise ServerConnectionError, "Couldn't connect to socket: %s" % x
         self.connected = 1
         if self.irclibobj.fn_to_add_socket:
@@ -451,7 +453,6 @@ class ServerConnection(Connection):
         """
 
         self.disconnect("Closing object")
-        self.irclibobj._remove_connection(self)
 
     def _get_socket(self):
         """[Internal]"""
@@ -561,6 +562,9 @@ class ServerConnection(Connection):
                             print "command: %s, source: %s, target: %s, arguments: %s" % (
                                 command, prefix, target, m)
                         self._handle_event(Event(command, prefix, target, m))
+                        if command == "ctcp" and m[0] == "ACTION":
+                            # Emit an action event too. We're generous today.
+                            self._handle_event(Event("action", prefix, target, m[1:]))
                     else:
                         if DEBUG:
                             print "command: %s, source: %s, target: %s, arguments: %s" % (
@@ -609,14 +613,14 @@ class ServerConnection(Connection):
 
         See documentation for IRC.add_global_handler.
         """
-        apply(self.irclibobj.add_global_handler, args)
+        self.irclibobj.add_global_handler(*args)
 
     def remove_global_handler(self, *args):
         """Remove global handler.
 
         See documentation for IRC.remove_global_handler.
         """
-        apply(self.irclibobj.remove_global_handler, args)
+        self.irclibobj.remove_global_handler(*args)
 
     def action(self, target, action):
         """Send a CTCP ACTION command."""
@@ -645,6 +649,7 @@ class ServerConnection(Connection):
         if not self.connected:
             return
 
+        self.irclibobj._remove_connection(self)
         self.connected = 0
         try:
             self.socket.close()
@@ -760,6 +765,8 @@ class ServerConnection(Connection):
 
     def quit(self, message=""):
         """Send a QUIT command."""
+        # Note that many IRC servers don't use your QUIT message
+        # unless you've been connected for at least 5 minutes!
         self.send_raw("QUIT" + (message and (" :" + message)))
 
     def sconnect(self, target, port="", server=""):

@@ -16,7 +16,7 @@
 #
 # Joel Rosdahl <joel@rosdahl.net>
 #
-# $Id: ircbot.py,v 1.1 2004/08/04 16:23:31 cort Exp $
+# $Id: ircbot.py,v 1.2 2005/03/31 17:11:52 cort Exp $
 
 """ircbot -- Simple IRC bot library.
 
@@ -141,7 +141,9 @@ class SingleServerIRCBot(SimpleIRCClient):
     def _on_namreply(self, c, e):
         """[Internal]"""
 
-        # e.arguments()[0] == "="     (why?)
+        # e.arguments()[0] == "@" for secret channels,
+        #                     "*" for private channels,
+        #                     "=" for others (public channels)
         # e.arguments()[1] == channel
         # e.arguments()[2] == nick list
 
@@ -208,14 +210,20 @@ class SingleServerIRCBot(SimpleIRCClient):
         """
         return "ircbot.py by Joel Rosdahl <joel@rosdahl.net>"
 
-    def jump_server(self):
+    def jump_server(self, msg="Changing servers"):
         """Connect to a new server, possibly disconnecting from the current.
 
         The bot will skip to next server in the server_list each time
         jump_server is called.
         """
         if self.connection.is_connected():
-            self.connection.quit("Jumping servers")
+            self.connection.quit(msg)
+            self.connected = 0
+            try:
+                self.connection.socket.close()
+            except socket.error, x:
+                pass
+            self.socket = None
         self.server_list.append(self.server_list.pop(0))
         self._connect()
 
@@ -232,7 +240,8 @@ class SingleServerIRCBot(SimpleIRCClient):
             if len(e.arguments()) > 1:
                 c.ctcp_reply(nm_to_n(e.source()),
                              "PING " + e.arguments()[1])
-        elif e.arguments()[0] == "DCC" and e.arguments()[1] == "CHAT":
+        elif e.arguments()[0] == "DCC" and string.split(e.arguments()[1],
+                                                        " ", 1)[0] == "CHAT":
             self.on_dccchat(c, e)
 
     def on_dccchat(self, c, e):
@@ -278,6 +287,10 @@ class IRCDict:
         ck = irc_lower(key)
         del self.data[self.canon_keys[ck]]
         del self.canon_keys[ck]
+    def __iter__(self):
+        return iter(self.data)
+    def __contains__(self, key):
+        return self.has_key(key)
     def clear(self):
         self.data.clear()
         self.canon_keys.clear()
@@ -409,8 +422,7 @@ class Channel:
     def is_invite_only(self):
         return self.has_mode("i")
 
-    def has_message_from_outside_protection(self):
-        # Eh... What should it be called, really?
+    def has_allow_external_messages(self):
         return self.has_mode("n")
 
     def has_limit(self):
