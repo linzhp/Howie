@@ -1,0 +1,245 @@
+<aiml version="1.0">
+
+<!-- Anna set doesn't define this I think -->
+<!-- You can change this .. however, if another file gets loaded later, with this pattern,
+	then that name will get used instead -->
+<category>
+<pattern>BOT NAME</pattern>
+<template>Howie</template>
+</category>
+
+<category>
+<pattern>BOOTSTRAP</pattern>
+<template>
+<secure>
+<srai>LOAD AIML B</srai>
+</secure>
+</template>
+</category>
+
+<category>
+<pattern>SHOW INTRO HELP</pattern>
+<template>
+<br/>
+Welcome to J-Alice version 0.3<br/>
+==============================<br/>
+<br/>
+- To configure IRC, edit irc-conn.aiml. Examples are provided.<br/>
+- Editing AIML files that are in use by the bot can cause the bot to crash.<br/>
+  This is due to the fact that the AIML files are read directly when<br/>
+  retrieving the &lt;template&gt;. Even if the bot doesn't crash, it's output may<br/>
+  not be correct. You have been warned!<br/>
+- Simple security has been added, to prevent people abusing your bot. At the<br/>
+  command prompt, you are automatically authorised. In simple-auth.aiml are<br/>
+  a few categories which can be configured for allowing other people to<br/>
+  authorise themselves.<br/>
+- You can load AIML files while the bot is running, using the command: LOAD<br/>
+  &lt;file&gt;, where &lt;file&gt; is the name of the file, minus the .aiml extension.<br/>
+  EG: user &gt; load hello<br/>
+  will cause the bot to try and load hello.aiml.<br/>
+- A simple, uncustomisable webserver has been added. Look in webserver.aiml<br/>
+  for configuring the port used by the bot.<br/>
+- To shutdown the bot, type 'exit'. Note: this only works in the command<br/>
+  prompt. To change what the bot does at startup, edit the BOOTSTRAP category<br/>
+  in std-startup.aiml.<br/>
+- To display the Frequently Asked Questions (FAQs), type 'display help' at<br/>
+  the prompt.<br/>
+- When talking to the bot on IRC, it's nick must be part of the message if<br/>
+  talking in a channel. Also, you must use same case as the bot's nick (ie:<br/>
+  it is case-sensitive).<br/>
+<br/>
+For comments and suggestions, and feature requests, please join the J-Alice<br/>
+General mailing list.<br/>
+<br/>
+Link: https://lists.sourceforget.net/lists/listinfo/j-alice-general<br/>
+<br/>
+Updates, useful links, sourcecode and other stuff @ our site:<br/>
+<br/>
+Website: http://j-alice.sourceforge.net<br/>
+<br/>
+Have fun :-)<br/>
+</template>
+</category>
+
+<!-- This category works with the Anna and Wallace AIML sets -->
+<category>
+<pattern>LOAD AIML A</pattern>
+<template>
+<secure error="You are not allowed to load this AIML set">
+<learn>aiml/A.aiml</learn>
+<learn>aiml/B.aiml</learn>
+<learn>aiml/C.aiml</learn>
+<learn>aiml/D.aiml</learn>
+<learn>aiml/E.aiml</learn>
+<learn>aiml/F.aiml</learn>
+<learn>aiml/G.aiml</learn>
+<learn>aiml/H.aiml</learn>
+<learn>aiml/I.aiml</learn>
+<learn>aiml/J.aiml</learn>
+<learn>aiml/K.aiml</learn>
+<learn>aiml/L.aiml</learn>
+<learn>aiml/M.aiml</learn>
+<learn>aiml/N.aiml</learn>
+<learn>aiml/O.aiml</learn>
+<learn>aiml/P.aiml</learn>
+<learn>aiml/Q.aiml</learn>
+<learn>aiml/R.aiml</learn>
+<learn>aiml/S.aiml</learn>
+<learn>aiml/T.aiml</learn>
+<learn>aiml/U.aiml</learn>
+<learn>aiml/V.aiml</learn>
+<learn>aiml/W.aiml</learn>
+<learn>aiml/X.aiml</learn>
+<learn>aiml/Y.aiml</learn>
+<learn>aiml/Z.aiml</learn>
+<learn>aiml/1.aiml</learn>
+<learn>aiml/2.aiml</learn>
+<learn>aiml/3.aiml</learn>
+<learn>aiml/4.aiml</learn>
+<learn>aiml/5.aiml</learn>
+<learn>aiml/6.aiml</learn>
+<learn>aiml/7.aiml</learn>
+<learn>aiml/8.aiml</learn>
+<learn>aiml/9.aiml</learn>
+<learn>aiml/star.aiml</learn>
+<learn>aiml/under.aiml</learn>
+</secure>
+</template>
+</category>
+
+<!-- This category works with the Standard AIML Set -->
+<category>
+<pattern>LOAD AIML B</pattern>
+<template>
+<secure error="You are not allowed to load this AIML set">
+<learn>standard/std-65percent.aiml</learn>
+<learn>standard/std-atomic.aiml</learn>
+<learn>standard/std-botmaster.aiml</learn>
+<learn>standard/std-brain.aiml</learn>
+<learn>standard/std-connect.aiml</learn>
+<learn>standard/std-dictionary.aiml</learn>
+<learn>standard/std-disconnect.aiml</learn>
+<learn>standard/std-dont.aiml</learn>
+<learn>standard/std-errors.aiml</learn>
+<learn>standard/std-gender.aiml</learn>
+<learn>standard/std-geography.aiml</learn>
+<learn>standard/std-german.aiml</learn>
+<learn>standard/std-gossip.aiml</learn>
+<learn>standard/std-hello.aiml</learn>
+<learn>standard/std-inactivity.aiml</learn>
+<learn>standard/std-inventions.aiml</learn>
+<learn>standard/std-knowledge.aiml</learn>
+<learn>standard/std-lizards.aiml</learn>
+<learn>standard/std-login.aiml</learn>
+<learn>standard/std-numbers.aiml</learn>
+<learn>standard/std-personality.aiml</learn>
+<learn>standard/std-pickup.aiml</learn>
+<learn>standard/std-politics.aiml</learn>
+<learn>standard/std-profile.aiml</learn>
+<learn>standard/std-religion.aiml</learn>
+<learn>standard/std-robot.aiml</learn>
+<learn>standard/std-sales.aiml</learn>
+<learn>standard/std-sextalk.aiml</learn>
+<learn>standard/std-sports.aiml</learn>
+<learn>standard/std-srai.aiml</learn>
+<learn>standard/std-suffixes.aiml</learn>
+<learn>standard/std-that.aiml</learn>
+<learn>standard/std-turing.aiml</learn>
+<learn>standard/std-yesno.aiml</learn>
+</secure>
+</template>
+</category>
+
+<!-- Loads an AIML file while the bot is running -->
+<category>
+<pattern>LOAD *</pattern>
+<secure>
+<template><learn><star/>.aiml</learn></template>
+</secure>
+</category>
+
+<!-- Some AIML Sets might <srai> to this, but may not have it defined -->
+<category>
+<pattern>CATCHALL</pattern>
+<template/>
+</category>
+
+<!-- FAQs that can be answered by the bot -->
+
+<category>
+<pattern>DISPLAY HELP</pattern>
+<template>
+These are the FAQs for J-Alice<br/>
+<br/>
+1. Why doesn't it say anything?<br/>
+2. How do I load AIML files?<br/>
+3. How do I get IRC to work, and what can I do?<br/>
+4. Where can I get additional support?<br/>
+<br/>
+To display an answer, type: ANSWER FAQ #, replacing #<br/>
+with the number of the question you want answered.<br/>
+</template>
+</category>
+
+<category>
+<pattern>ANSWER FAQ 1</pattern>
+<template>Why doesn't it say anything:<br/>
+<br/>
+This will be because there is no AIML loaded.<br/>
+For linux/unix and MacOS users, you may find that you need to<br/>
+convert the '\' in the file paths to '/' or ':'. Hopefully<br/>
+this requirement will be unnecessary in future releases.<br/>
+</template>
+</category>
+
+<category>
+<pattern>ANSWER FAQ 2</pattern>
+<template>How do I load AIML files:<br/>
+<br/>
+You can use the following command with your bot:<br/>
+user &gt; load hello<br/>
+and it will load hello.aiml. Just substitute 'hello'<br/>
+with the name of the file you want to load.<br/>
+Note: this only loads files with the .aiml extension.<br/>
+</template>
+</category>
+
+<category>
+<pattern>ANSWER FAQ 3</pattern>
+<template>How do I get IRC to work, and what can I do:<br/>
+<br/>
+Sample configurations are provided in irc-conn.aiml.<br/>
+Feel free to change the configuration options :-)<br/>
+If you have the pattern: JOIN OPN, then typing 'join opn'<br/>
+at the prompt will trigger that category. If the template<br/>
+contains the correct IRC tags, the bot will attempt to<br/>
+connect to the specified server.<br/>
+<br/>
+If you are having problems, try using a different server for<br/>
+your network. Also, servers requiring IDENT will not work.<br/>
+You may have to ensure that the nick the bot uses is not taken,<br/>
+as it is unable to switch nicks yet.<br/>
+<br/>
+If your bot fails to join a channel upon connecting to the server,<br/>
+then you can private message the bot, specifying the command:<br/>
+'join #channel', and it will join #channel. Simply change #channel<br/>
+to be the channel you wish it to join. To force the bot to leave a<br/>
+channel, use 'part #channel', and it will leave the channel.<br/>
+<br/>
+Note, for the above commands to work, you must be authorised. Details<br/>
+of authorising are given in the simple-auth.aiml file.<br/>
+<br/>
+The above commands, amongst others are detailed in irc-conn.aiml.<br/>
+</template>
+</category>
+
+<category>
+<pattern>ANSWER FAQ 4</pattern>
+<template>Where can I get additional support:<br/>
+<br/>
+If you are _really_ stuck, you can try looking for s-a-t-a-n @ irc.openprojects.net, #bots<br/>
+You could also write an email to consulatewizard@yahoo.co.nz<br/>
+</template>
+</category>
+
+</aiml>
