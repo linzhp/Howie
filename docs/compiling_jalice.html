@@ -6,7 +6,16 @@
 <H2>How To Compile J-Alice for Howie</H2>
 
 <P>This document describes the difficulties you're likely to run into
-while compiling the J-Alice backend on various systems.</P>
+while compiling the J-Alice backend on various systems.  For the
+record, J-Alice has successfully been compiled on the following
+platforms:</P>
+
+<UL>
+<LI>Windows XP (Visual Studio .NET)</LI>
+<LI>Red Hat Linux 8.0 (gcc 3.2)</LI>
+<LI>FreeBSD 5.1 (gcc 3.2.2)</LI>
+<LI>Solaris 2.7 (gcc 2.95.3)</LI>
+</UL>
 
 <P>So, here's the big picture: J-Alice is officially distributed as a
 stand-alone executable, implemented in C++.  The version of J-Alice
@@ -120,9 +129,6 @@ to the <TT>howie/backends</TT> directory.</LI>
 <LI>Navigate to the <TT>j-alice-src-0.5/src/</TT> directory.</LI>
 <LI>Run <TT>make depend ; make ; make install</TT></LI>
 </UL>
-
-<P>J-Alice has been successfully compiled on the following platforms:
-Solaris 2.7 (gcc 2.95.3), FreeBSD 5.1 (gcc 3.2.2).</P>
 
 <H3>How to build J-Alice undere Windows (Visual C++ .NET)</H3>
 
