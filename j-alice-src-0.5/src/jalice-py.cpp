@@ -72,7 +72,7 @@ static bool _getJaliceConfigDir(string& sConfigDir)
   FILE *pConfigFile = NULL;
 
   // Check the current directory.
-  pConfigFile = fopen("std-startup.aiml", "r");
+  pConfigFile = fopen("std-startup.xml", "r");
   if (pConfigFile != NULL)
     {
       fclose(pConfigFile);
@@ -86,7 +86,7 @@ static bool _getJaliceConfigDir(string& sConfigDir)
     {
       string sJaliceHome( szHome );
       sJaliceHome += "/.jalice";
-      string sConfigFilePath = sJaliceHome + "/std-startup.aiml";
+      string sConfigFilePath = sJaliceHome + "/std-startup.xml";
       pConfigFile = fopen(sConfigFilePath.c_str(), "r");
       if (pConfigFile != NULL)
 	{
@@ -101,7 +101,7 @@ static bool _getJaliceConfigDir(string& sConfigDir)
   if (szJaliceConfig != NULL)
     {
       string sJaliceHome( szJaliceConfig );
-      string sJaliceConfigFile = sJaliceHome + "/std-startup.aiml";
+      string sJaliceConfigFile = sJaliceHome + "/std-startup.xml";
       pConfigFile = fopen(sJaliceConfigFile.c_str(), "r");
       if (pConfigFile != NULL)
 	{

@@ -105,6 +105,7 @@ Section "!Howie (required)" SecCopyMain
 	SetDetailsPrint textonly
 	File runme.py
 	File README.txt
+	File j-alice.ini
 	File std-startup.xml
 	File substitutions.xml
 	SetOutPath $INSTDIR\howie

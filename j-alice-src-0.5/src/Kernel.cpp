@@ -408,9 +408,11 @@ Match *Kernel::match(const string &context, const string &input, const string &t
 	m = match(root, root, CONTEXT, path, "", "");
 	if (m != NULL) {
 		m->setPath(m->getContextPattern() + " : " + m->getInputPattern() + " : " + m->getThatPattern() + " : " + m->getTopicPattern());
-		getStream("Match")->Write(string("Match: " + m->getPath() + "\n").c_str());
+        if (trace)
+    		getStream("Match")->Write(string("Match: " + m->getPath() + "\n").c_str());
 	} else {
-		getStream("Match")->Write("No match found\n");
+        if (trace)
+    		getStream("Match")->Write("No match found\n");
 	}
 	return m;
 }
@@ -674,9 +676,9 @@ string Kernel::respond(const string &input, const string &id, Responder *r, int,
 		if (m == NULL) {
 				cerr << "There is no match for input: " << sentence << endl;
 		} else {
-			cerr << endl;
             if (trace)
             {
+                cerr << endl;
 			    cerr << "INPUT: " << originalInput << endl;
 			    cerr << "MATCH PATH: " << m->getPath() << endl;
 			    cerr << "FILENAME: " << m->getNode()->getActualTemplate()->getFilename() << endl;
