@@ -19,7 +19,7 @@ class ActiveFrontEnd:
 		self._thread = thread
 
 _frontends = {}
-_kernel = None
+kernel = None
 def _addFrontEnd(name, cls):
 	global _frontends
 	
@@ -38,16 +38,18 @@ def _addFrontEnd(name, cls):
 
 
 def init():
-	global _kernel
+	global kernel
 	"Initialize the front-ends and back-ends."
 	# Fetch the configuration info
 	config = configFile.get()
 	
 	# Initialize the AIML interpreter	
-	_kernel = aiml.Kernel()
-	_kernel.verbose(config["general.verbose"] == "yes")
-	_kernel.bootstrap(learnFiles="std-startup.xml", commands="bootstrap")
-	_kernel.setBotName(config["general.botname"])
+	kernel = aiml.Kernel()
+	kernel.verbose(config["general.verbose"] == "yes" or config["cla.verboseMode"] == "yes")
+	kernel.setPredicate("secure", "yes") # secure the global session
+	kernel.bootstrap(learnFiles="std-startup.xml", commands="bootstrap")
+	kernel.setPredicate("secure", "no") # and unsecure it.
+	kernel.setBotName(config["general.botname"])
 	
 	# Handle local mode: only start the tty frontend
 	if config['cla.localMode'] == "yes":
@@ -82,7 +84,7 @@ def init():
 
 def submit(input, session):
 	"Submits a statement to the back-end. Returns the response to the statement."
-	response = _kernel.respond(input, session)
+	response = kernel.respond(input, session)
 	# if logging is enabled, write the input and response to the log.
 	try:
 		config = configFile.get()
@@ -92,7 +94,7 @@ def submit(input, session):
 			logfile = file("%s/%s.log" % (logdir, session), "a")
 			logfile.write(time.strftime("[%m/%d %H:%M:%S]\n"))
 			logfile.write("%s: %s\n" % (session, input))
-			logfile.write("%s: %s\n" % (_kernel.getBotName(), response))
+			logfile.write("%s: %s\n" % (kernel.getBotName(), response))
 			logfile.close()			
 	except:
 		pass
