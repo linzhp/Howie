@@ -1,0 +1,18 @@
+Additional frontends:
+ - ICQ: I haven't found a Python ICQ module yet.
+ - MSN: msnp, the Python MSN module, stopped working on October 15th, when
+        Microsoft switched its MSN servers to a new protocol that excludes
+        unauthorized third-party clients.  Until a new solution is developed,
+        no MSN front-end is planned.
+ - WEB: In progress.
+ - IRC: There's definitely demand for it, but I'm not an IRC user myself, so
+        I'm not sure what an IRC front-end would entail.  Volunteers are
+        welcome!
+
+Additional extension modules:
+ - Email spoofer.
+ - Address book / contact manager
+ - Sysadmin assistant
+
+Other features:
+ - Auto-configuration tool (script, GUI)
