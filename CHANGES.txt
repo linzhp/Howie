@@ -1,3 +1,8 @@
+ - Upgraded AIML interpreter to PyAIML version 0.8.1.
+ - Added "unix-install.py" helper script to automate some necessary setup steps on UNIX
+   platforms.
+ - Removed some Python 2.3-specific features; Howie should now run on Python 2.2.x.
+
 1/9/2004:
  - Upgraded AIML interpreter to PyAIML version 0.8.
  - Upgraded msnp package to v0.4.0 (the frontend still doesn't work, though).
