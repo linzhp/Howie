@@ -19,7 +19,6 @@ Valid Options:
 """
 
 import getopt
-#from optparse import Option, OptionParser
 import os
 import random
 import string
@@ -60,24 +59,6 @@ def main():
 		elif o in ["-l","--local"]:
 			localMode = "yes"
 	
-	### The following method uses the optparse module, which is
-	### only available in Python 2.3 or later.  Let's replace it
-	### with something more backwards-compatible...
-	
-	#usageString = "usage: %prog [options]"
-	#versionString = "howie snapshot-20040109"
-	#parser = OptionParser(usage=usageString, version=versionString)
-	#parser.add_option("-l", "--local", action="store_const", const="yes", dest="localMode",
-	#				  help="Local mode (only open the TTY interface)", default="no")
-	#parser.add_option("-f", "--config-file", action="store", type="string",
-	#				  dest="configFile", default="howie.ini", metavar="FILE",
-	#				  help="Use FILE instead of the default config file")
-	#parser.add_option("-v", "--verbose", action="store_const", const="yes",
-	#				  dest="verboseMode",  help="Enables verbose output", default="no")
-	#(options, args) = parser.parse_args()
-	#if len(args) != 0:
-	#	parser.error("incorrect number of arguments")
-
 	# Read config file
 	config = howie.configFile.load(configFile)
 
@@ -91,20 +72,6 @@ def main():
 
 	# Bootstrap the AI.
 	howie.core.init()
-
-	# Initialize the front-ends.  Each one runs in its own thread.
-##	if not options.bLocalMode and config['aim.active'] == 'yes':
-##		aimbot = HowieAIM.factory(config['aim.screenname'],
-##								  config['aim.password'])
-##		if aimbot is not None:
-##			aimThread = threading.Thread(name="aim", target=aimbot.go)
-##			aimThread.start()
-##
-##	if options.bLocalMode or config['tty.active'] == 'yes':
-##		ttybot = HowieTTY.factory()
-##		if ttybot is not None:
-##			ttyThread = threading.Thread(name="tty", target=ttybot.go)
-##			ttyThread.start()
 
 # if this file is run directly, call main.
 if __name__ == "__main__":
