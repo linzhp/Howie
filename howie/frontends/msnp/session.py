@@ -256,7 +256,9 @@ class Session(_Session):
                 {'Authorization': auth})
             res = con.getresponse()
             con.close()
-            if res.status != 200:
+            if res.status / 100 == 3:
+                dalogin[0] = res.getheader('Location').split('/', 3)[2]
+            elif res.status != 200:
                 raise HttpError(0, 'Bad response from login server.',
                     res.status, res.reason) # XXX handle redirection?
             else:

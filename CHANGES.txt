@@ -8,6 +8,8 @@
  - Improved error-handling during front-end module initialization.  Previously,
    any errors were mistakenly reported as "could not find valid frontend class"
    warnings.
+ - Applied patch to msnp module to fix problem with redirect messages while
+   logging in.
 
 0.5.0:
  - Arbitrary switch from date-based snapshots to "real" version numbers
