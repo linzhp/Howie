@@ -67,7 +67,12 @@ def init():
 			# We could alternately use the builtin function issubclass(C,B)
 			# on all objects defined in the module, but this seems cleaner
 			# (if perhaps slower).
+			# NOTE: This appears to cause problems with py2exe if the actual
+			# source files aren't present to be parsed.  I'm working on
+			# a workaround -- in the meantime, the frontend sources must be
+			# included.
 			classes = pyclbr.readmodule("howie.frontends.%s" % fe)
+			
 			
 			# Look for classes which are descended from IFrontEnd
 			for cls, clsInfo in classes.items():
