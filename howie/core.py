@@ -133,8 +133,9 @@ def init():
 				if issubclass(eval("frontends.%s.%s" % (fe, cls)), frontends.frontend.IFrontEnd):
 					# Create an instance of this class in the _frontends dictionary
 					_addFrontEnd(fe, cls)
-			except:
+			except AttributeError:
 				# no class defined in this file.
+				print "WARNING: could not find valid front-end c lass in module %s" % fe
 				continue
 
 def submit(input, session):
