@@ -61,8 +61,8 @@ INSTALLATION (Source distribution)
 ----------------------------------
 1. Unzip the archive (you've done that).
 2. UNIX USERS: run the "unix-install.py" script found in the main Howie
-   directory.  It will automatically configure Howie to run in a UNIX-like
-   environment.
+   directory (run "python unix-install.py" from the main Howie directory).
+   It will automatically configure Howie to run in a UNIX-like environment.
 3. Edit the howie.ini file, found in the directory where you installed Howie.
    This file lets you set up the interfaces presented to visitors (AIM, MSN,
    etc.) as well as customize Howie's behavior.  Each section has an "active"
