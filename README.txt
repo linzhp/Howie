@@ -27,6 +27,14 @@ Howie's knowledge base is made up of a wide variety of Internet resources.
 If you find something that he can't do, it's usually pretty straightforward
 to teach him!
 
+SYSTEM REQUIREMENTS
+-------------------
+Howie has been tested on Windows XP, Red Hat Linux and NetBSD.  However,
+he should work on any system that meets the following requirements:
+ - Python 2.2.x or greater.
+ - 64 MB available RAM (depending on the AIML set you're using)
+ - Dedicated Internet connection
+
 INSTALLATION (Windows binary distribution)
 ------------------------------------------
 1. Run the installer (you've done that).
