@@ -12,7 +12,7 @@
 	Var MY_PRODUCT
 	Var MY_VERSION
 	!define MY_PRODUCT "Howie"
-	!define MY_VERSION "20040109"
+	!define MY_VERSION "20040110"
 	
 	# General
 	Name "${MY_PRODUCT}"
@@ -126,8 +126,10 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 		DetailPrint "Installing Start Menu shortcuts..."
 		SetDetailsPrint textonly
 		CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-		SetOutPath $INSTDIR # To set working directory for shortcut
-		CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Run ${MY_PRODUCT}.lnk" \
+		SetOutPath $INSTDIR # To set working directory for shortcut		
+	        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Configure ${MY_PRODUCT}.lnk" \
+        		"$INSTDIR\howie.ini"
+        	CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Run ${MY_PRODUCT}.lnk" \
 			"$INSTDIR\howie.exe"
 		CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Run ${MY_PRODUCT} (Local Mode).lnk" \
 			"$INSTDIR\howie.exe" "-l"
@@ -135,7 +137,7 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 			"$INSTDIR\Uninstall.exe"
 		CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\README.lnk" \
 			"$INSTDIR\README.txt"
-
+		
 		# Write shortcut location to the registry (for Uninstaller)
 		WriteRegStr HKLM "Software\${MY_PRODUCT}" "Start Menu Folder" "$STARTMENU_FOLDER"
 		SetDetailsPrint both
@@ -220,6 +222,7 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR"
 	!insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
+	Delete "$SMPROGRAMS\$MUI_TEMP\Configure ${MY_PRODUCT}.lnk"
 	Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall ${MY_PRODUCT}.lnk"
 	Delete "$SMPROGRAMS\$MUI_TEMP\Run ${MY_PRODUCT}.lnk"
 	Delete "$SMPROGRAMS\$MUI_TEMP\Run ${MY_PRODUCT} (Local Mode).lnk"
