@@ -17,6 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import socket
+import httplib
 
 from string import split, join
 
@@ -47,7 +48,7 @@ class Connection:  # generic tcp connection wrapper
         return sent
 
     def send_data_line(self, line):
-        # print "C:" + line
+        # print "C:" + line #XXX
         return self.send_data_all(line) + self.send_data_all('\r\n')
 
     def receive_data_line(self):
@@ -65,7 +66,7 @@ class Connection:  # generic tcp connection wrapper
                 cnt = 0
             buf = buf + in_byte
             if cnt == 2:
-                # print "S:" + buf
+                # print "S:" + buf #XXX
                 return buf
 
     def break_(self):
@@ -109,6 +110,24 @@ class HttpProxyConnection(Connection):  # http tunnelling
         if status != 200:
             self.socket = None
         return self.socket
+
+class HTTPSConnection(httplib.HTTPSConnection):
+    # httplib.HTTPSConnection with HTTP proxy support
+    def __init__(self, host, port = None, key_file = None, cert_file = None,
+                 strict = None, http_proxy = None):
+        httplib.HTTPSConnection.__init__(self, host, port, key_file, cert_file,
+                                         strict)
+        self.http_proxy = http_proxy
+
+    def connect(self):
+        if self.http_proxy:
+            conn = HttpProxyConnection((self.host, self.port), self.http_proxy)
+            conn.establish()
+            sock = conn.socket
+            ssl = socket.ssl(sock, self.key_file, self.cert_file)
+            self.sock = httplib.FakeSocket(sock, ssl)
+        else:
+            httplib.HTTPSConnection.connect(self)
 
 # vim: set ts=4 sw=4 et tw=79 :
 

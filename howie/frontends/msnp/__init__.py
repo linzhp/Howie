@@ -1,6 +1,6 @@
 # msnp.py -- An implementation of the MSN Messenger Protocol
 #
-# Version 0.3 (for Python 2.2)
+# Version 0.4 (for Python 2.3)
 #
 # Copyright (C) 2003 Manish Jethani (manish_jethani AT yahoo.com)
 #

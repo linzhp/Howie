@@ -221,40 +221,92 @@ class Session(_Session):
         self.friend_list = FriendList()
         self.active_chats = {}
 
+    def __get_twn_ticket(self, twn_string, username, password):
+        from net import HTTPSConnection
+        from urllib import urlencode
+        debuglevel = 0
+
+        # step 1: get address of login server
+        con = HTTPSConnection('nexus.passport.com',
+            http_proxy = self.http_proxy)
+        con.set_debuglevel(debuglevel)
+        con.request('GET', '/rdr/pprdr.asp')
+        res = con.getresponse()
+        con.close()
+        if res.status != 200:
+            raise (0, 'Bad response from passport nexus server: ' \
+                + str((res.status, res.reason)))
+        hdr = res.getheader('PassportURLs')
+        url = {}
+        for u in hdr.split(','):
+            k, v = u.split('=')
+            url[k] = v
+        dalogin = url['DALogin'].split('/', 1)
+
+        # step 2: get "ticket" to notification server
+        while True:
+            con = HTTPSConnection(dalogin[0], http_proxy = self.http_proxy)
+            con.set_debuglevel(debuglevel)
+            auth = 'Passport1.4 OrgVerb=GET,%s,%s,%s,%s' \
+                % (urlencode({'OrgURL': 'http://messenger.msn.com'}),
+                    urlencode({'sign-in': username}),
+                    urlencode({'pwd': password}),
+                    twn_string)
+            con.request('GET', '/%s' % (dalogin[1]), '',
+                {'Authorization': auth})
+            res = con.getresponse()
+            con.close()
+            if res.status != 200:
+                raise (0, 'Bad response from login server: ' \
+                    + str((res.status, res.reason))) # XXX handle redirection?
+            else:
+                break
+        hdr = res.getheader('Authentication-Info') or \
+              res.getheader('WWW-Authenticate')
+        hdr = hdr[len('Passport1.4 '):]
+        auth = {}
+        for u in hdr.split(','):
+            k, v = u.split('=', 1)
+            if v[0] == '\'' and v[-1] == '\'':
+                v = v[1:-1]
+            auth[k] = v
+        ticket = auth['from-PP']
+
+        return ticket
+        # TODO code cleanup
+
     def __handshake(self, server, username, password):
         conn = self._connect(server)
         try:
-            ver = Command('VER', self.transaction_id,
-                ('MSNP7', 'MSNP6', 'MSNP5', 'MSNP4', 'CVR0'))
+            ver = Command('VER', self.transaction_id, ('MSNP8', 'CVR0'))
             resp = self._sync_command(ver, conn)
             if resp.cmd != 'VER' or resp.args[0] == '0':
                 raise Error(0, 'Bad response for VER command.')
 
-            inf = Command('INF', self.transaction_id, ())
-            resp = self._sync_command(inf, conn)
-            if resp.cmd != 'INF' or resp.args[0] != 'MD5':
-                raise Error(0, 'Bad response for INF command.')
+            cvr = Command('CVR', self.transaction_id,
+                ('0x0409', 'win', '4.10', 'i386', 'MSNMSGR', '6.0.0602',
+                'MSMSGS ', username))
+            resp = self._sync_command(cvr, conn)
+            if resp.cmd != 'CVR':
+                raise Error(0, 'Bad response for CVR command.')
 
-            usr = Command('USR', self.transaction_id, ('MD5', 'I', username))
+            usr = Command('USR', self.transaction_id, ('TWN', 'I', username))
             resp = self._sync_command(usr, conn)
             if resp.cmd != 'USR' and resp.cmd != 'XFR':
                 raise Error(0, 'Bad response for USR command.')
 
-            # for dispatch server, response is ver, inf, xfr; for notification
-            # server, it is ver, inf, usr (or same as dispatch server, in some
+            # for dispatch server, response is ver, cvr, xfr; for notification
+            # server, it is ver, cvr, usr (or same as dispatch server, in some
             # cases)
 
             if resp.cmd == 'XFR':
                 return split(resp.args[1], ':', 1)
             elif resp.cmd == 'USR':
-                md5_hash = resp.args[2]
+                twn_string = resp.args[2]
 
-                m = md5.new()
-                m.update(md5_hash)
-                m.update(password)
-                digest = hexlify(m.digest())
+                ticket = self.__get_twn_ticket(twn_string, username, password)
 
-                usr = Command('USR', self.transaction_id, ('MD5', 'S', digest))
+                usr = Command('USR', self.transaction_id, ('TWN', 'S', ticket))
                 resp = self._sync_command(usr, conn)
                 if resp.cmd != 'USR':
                     raise Error(int(resp.cmd), protocol.errors[resp.cmd])
