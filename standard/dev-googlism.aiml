@@ -15,21 +15,21 @@ through www.googlism.com.
 <category>
 <pattern>WHAT IS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHERE IS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHEN IS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
@@ -37,28 +37,28 @@ through www.googlism.com.
 <category>
 <pattern>WHO WAS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHAT WAS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHERE WAS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHEN WAS *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
@@ -66,56 +66,56 @@ through www.googlism.com.
 <category>
 <pattern>WHO ARE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHAT ARE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHERE ARE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHEN ARE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHO WERE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHAT WERE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHERE WERE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
 <category>
 <pattern>WHEN WERE *</pattern>
 <template>
-<srai>WHO IS <star/></srai>
+<system mode="sync">scripts\googlism.py "<input/>"</system>
 </template>
 </category>
 
