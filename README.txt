@@ -12,18 +12,20 @@ Currently, Howie is willing to discuss religion, sports, sex (reluctantly),
 and philosophy.  He even knows a little German!
 
 Howie is Helpful.
-Howie is able to answer most questions of the form "Who/what/where/when
+Howie is able to answer most questions of the form "Who/what/where/when 
 is/was/are/were X?" -- though his answers are occasionally more
-entertaining than accurate.  He will provide definitions or synonyms for any
-word in the dictionary.  He can even perform a few simple remote
-system-administration tasks!
+entertaining than accurate. He can also help find rhymes for a word, or
+tell you what an acronym means. He will someday provide definitions or
+synonyms for any word in the dictionary, query your address book, and even
+perform a few simple remote system-administration tasks!
 
 Howie is Connected.
-You can communicate with Howie in a number of different ways: AIM,
-MSN Messenger, IRC, or locally on the command-line.  His knowledge
-base is made up of a wide variety of Internet resources.  If you find
-something that Howie can't do, it's usually pretty straightforward to
-teach him!
+You can communicate with Howie in a number of different ways: AIM, MSN
+Messenger (in progress), XML-RPC, or locally on the command-line. Future
+versions will include interfaces for HTTP, IRC, ICQ, Zephyr, and more!
+Howie's knowledge base is made up of a wide variety of Internet resources.
+If you find something that he can't do, it's usually pretty straightforward
+to teach him!
 
 INSTALLATION
 ------------
