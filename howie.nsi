@@ -12,7 +12,7 @@
 	Var MY_PRODUCT
 	Var MY_VERSION
 	!define MY_PRODUCT "Howie"
-	!define MY_VERSION "20031217"
+	!define MY_VERSION "20040107"
 	
 	# General
 	Name "${MY_PRODUCT}"
