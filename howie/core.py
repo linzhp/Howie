@@ -1,9 +1,11 @@
 import os
+import os.path
 import pyclbr
 import random
 import re
 import string
 import threading
+import time
 
 # Howie-specific
 import aiml
@@ -78,7 +80,20 @@ def init():
 				# no class defined in this file.
 				continue
 
-def submit(input, user):
+def submit(input, session):
 	"Submits a statement to the back-end. Returns the response to the statement."
-	
-	return _kernel.respond(input, user)
+	response = _kernel.respond(input, session)
+	# if logging is enabled, write the input and response to the log.
+	try:
+		config = configFile.get()
+		if config["general.logging"] in ['yes', 'y', 'true']:
+			logdir = config["general.logdir"]
+			if not os.path.isdir(logdir): os.mkdir(logdir)
+			logfile = file("%s/%s.log" % (logdir, session), "a")
+			logfile.write(time.strftime("[%m/%d %H:%M:%S]\n"))
+			logfile.write("%s: %s\n" % (session, input))
+			logfile.write("%s: %s\n" % (_kernel.getBotName(), response))
+			logfile.close()			
+	except:
+		pass
+	return response
