@@ -21,9 +21,13 @@ configDefaults = {
 class FrontEndAIM(toc.TocTalk, frontend.IFrontEnd):
 	def __init__(self):
 		config = howie.configFile.get()
-		try: screenname = config['aim.screenname']
+		try:
+			screenname = config['aim.screenname']
+			if screenname == "": raise KeyError
 		except KeyError: screenname = raw_input("AIM screenname: ")
-		try: password = config['aim.password']
+		try:
+			password = config['aim.password']
+			if password == "": raise KeyError
 		except KeyError: password = getpass.getpass("AIM password for %s: " % screenname)
 		toc.TocTalk.__init__(self, screenname, password)
 		try: self._info = config['aim.profile']
