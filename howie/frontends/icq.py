@@ -44,7 +44,6 @@ class FrontEndICQ(frontend.IFrontEnd):
 				
 	def go(self):
 		# Serve forever
-		print "***ICQ is off an running!"
 		reactor.run(installSignalHandlers=0)
 
 	def display(self, output, user):

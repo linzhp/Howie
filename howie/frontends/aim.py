@@ -39,15 +39,11 @@ class FrontEndAIM(frontend.IFrontEnd):
 
 		class OAuth(oscar.OscarAuthenticator):
 			BOSClass = oscarlistener.OscarListener
-		print "*** AIM: creating client."
 		client = protocol.ClientCreator(reactor, OAuth, screenname, password, icq=0)
-		print "*** AIM: connecting to server."
 		client.connectTCP(*hostport)
-		print "*** AIM: all is good!"
 				
 	def go(self):
 		# Serve forever
-		print "***AIM is off an running!"
 		reactor.run(installSignalHandlers=0)
 
 	def display(self, output, user):
