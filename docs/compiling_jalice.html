@@ -36,7 +36,7 @@ your system:
 <LI><B>SWIG_LIB</B>: point this to the SWIG lib directory (this
 directory contains the <TT>swig.swg</TT> file).</LI>
 
-<LI>><B>PYTHON_INCLUDE</B>: point this to your Python include
+<LI><B>PYTHON_INCLUDE</B>: point this to your Python include
 directory (this directory contains the <TT>Python.h</TT> header
 file).</LI>
 
@@ -136,7 +136,7 @@ don't ship with a debug build of PythonXY.lib).</LI>
 
 <LI>Build.</LI>
 
-<UL>
+</UL>
 
 <P>J-Alice has been successfully compiled with Visual Studio 6.0 in
 the past, but I no longer have a copy with which to maintain separate
@@ -156,7 +156,7 @@ I'll collect the most common ones here.</P>
 files were omitted, or non-standard header files (like
 <TT>unistd.h</TT>) were included outside of #ifdef blocks.  Those
 should be pretty straightforward to handle, so long as you make any
-changes inside an appropriate "#ifdef <YOUR PLATFORM>" block.  You
+changes inside an appropriate "#ifdef YOUR_PLATFORM" block.  You
 don't want the fix for your platform to break the other platforms, do
 you?</P>
 
@@ -165,7 +165,7 @@ classes that the J-Alice authors adamantly insist on using:
 <TT>istreambuf_iterator</TT> and <TT>strstream</TT>.  I believe that I
 have successfully exorcised both classes from the J-Alice sources that
 ship with Howie.  I simple replaced <TT>strstream</TT> with the
-<TT>stringstream</TT> class (defined in <PRE><sstream></PRE>), and it
+<TT>stringstream</TT> class (defined in <TT>&lt;sstream&gt;</TT>), and it
 seems to work fine.  The <TT>istreambuf_iterator</TT> was a little
 more complicated: the J-Alice authors recommend simply dropping in the
 standard <TT>istream_iterator</TT> in its place, but that doesn't
