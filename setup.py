@@ -8,7 +8,7 @@ setup(name="Howie",
     author_email="cort@users.sourceforge.net",
     description="Howie The Chatterbot",
     url="http://howie.sourceforge.net/",
-    scripts=["runme.py"],
+    console=["runme.py"],
     data_files=[
         #("scripts", glob.glob("scripts\\*.py")),
         ("standard", glob.glob("standard\\std-*.aiml")),

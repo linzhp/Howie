@@ -12,7 +12,7 @@
 	Var MY_PRODUCT
 	Var MY_VERSION
 	!define MY_PRODUCT "Howie"
-	!define MY_VERSION "0.5.0"
+	!define MY_VERSION "0.5.1"
 	
 	# General
 	Name "${MY_PRODUCT}"
@@ -26,7 +26,6 @@
 	Var MUI_TEMP
 	Var STARTMENU_FOLDER
 	
-
 	# Compiler configuration
 	SetCompressor bzip2
 	ShowInstDetails show
@@ -89,9 +88,8 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 	# Install core files.
 	DetailPrint "Installing core files..."
 	SetDetailsPrint textonly
-	File /r dist\runme\*
+	File /r dist\*
 	Rename runme.exe howie.exe
-	File C:\progra~1\Python\w9xpopen.exe
 	SetDetailsPrint both
 	
 	# Install documentation
