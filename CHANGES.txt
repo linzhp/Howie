@@ -5,6 +5,7 @@
  - Added some missing tags in AIML files.
  - Bot name and verbosity are now initialized from the config file.
  - Added support for conversation logging (enabled in the config file).
+ - Howie can now answer "what rhymes with X?" questions.
 
 12/1/2003: "Apocalypse Howie (Dev-20031201) is released
  - Fixed bug in front-end loader that required a bunch of otherwise

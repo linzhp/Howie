@@ -109,6 +109,7 @@ Interpreter Version Info: <version/>
 
 <!-- Load some Howie-specific AIML files -->
 <learn>standard/howie-googlism.aiml</learn>
+<learn>standard/howie-rhyme.aiml</learn>
 
 </secure>
 </template>
