@@ -1,0 +1,177 @@
+<HTML>
+<HEAD>
+<TITLE>Compiling J-Alice for Howie</TITLE>
+</HEAD>
+
+<H2>How To Compile J-Alice for Howie</H2>
+
+<P>This document describes the difficulties you're likely to run into
+while compiling the J-Alice backend on various systems.</P>
+
+<P>So, here's the big picture: J-Alice is officially distributed as a
+stand-alone executable, implemented in C++.  The version of J-Alice
+included in Howie's source tree has been modified by yours truly to
+compile into a shared library (a "DLL", in Windows parlance) which can
+be loaded and used by the rest of Howie, which is implemented in
+Python.</P>
+
+<P>The first step, on any platform, is to install <A
+HREF="http://www.swig.org">SWIG</A>, the Simplified Wrapper and
+Interface Generator.  SWIG is used to generate the Python interface to
+the J-Alice system.  You must download and install SWIG before you can
+compile J-Alice.  In addition to the standard SWIG installation
+procedure, you must do the following before continuing:</P>
+
+<UL>
+
+<LI>The SWIG executable must be installed in your system's search
+path, so you can just run <TT>swig</TT> from the command line without
+specifying a directory.</LI>
+
+<LI>The following environment variables must be defined correctly for
+your system:
+
+<UL>
+
+<LI><B>SWIG_LIB</B>: point this to the SWIG lib directory (this
+directory contains the <TT>swig.swg</TT> file).</LI>
+
+<LI>><B>PYTHON_INCLUDE</B>: point this to your Python include
+directory (this directory contains the <TT>Python.h</TT> header
+file).</LI>
+
+<LI><B>PYTHON_LIB</B>: point this to your Python library directory
+(this directory contains a <TT>PythonXY.lib</TT> or
+<TT>libpythonX.Y.a</TT> file, where X.Y is your python version
+number.)</LI>
+
+</UL>
+
+Here's a handy shortcut for UNIX systems.  So long as you know what
+version of Python you have installed, you can get your shell to do
+most of the work by defining your PYTHON_INCLUDE and PYTHON_LIB
+environment variables thusly:
+
+<PRE>
+# bash syntax
+PYTHON_PREFIX=`python -c "import sys; print sys.prefix"`
+export PYTHON_LIB=$PYTHON_PREFIX/lib/python2.2/config/libpython2.2.a
+export PYTHON_INCLUDE=$PYTHON_PREFIX/include/python2.2/
+</PRE>
+</LI>
+
+</UL>
+
+<P>To test your SWIG installation, find the <TT>jalice.i</TT> file in
+your Howie source tree.  In that directory, run the following
+command:</P>
+
+<P><PRE>swig -c++ -python -o jalice_wrap.cxx jalice.i</PRE></P>
+
+<P>If the command completes successfully, you should now have a
+<TT>jalice_wrap.cxx</TT> and a <TT>jalice.py</TT> file, which together
+specify the Python interface to J-Alice.  Cool!</P>
+
+<P>Now, on to the actual compiling.  Taking a look at the big picture
+again, the compilation process will produce two files that interest
+us:</P>
+
+<UL>
+
+<LI><B><TT>jalice.py</TT></B>: this is the file that Howie includes to
+access the J-Alice backend.</LI>
+
+<LI><B><TT>_jalice.dll</TT></B> (or <B><TT>_jalice.so</TT></B> under
+Unix): this shared library contains the J-Alice implementation.</LI>
+
+</UL>
+
+<P>The build process will perform the following steps.  If you find
+yourself circumventing the build process (perhaps to build J-Alice
+using a different compiler), here's what you'll need to do:</P>
+
+<UL>
+
+<LI>Run <TT>swig</TT> on the <TT>jalice.i</TT> file (using the command
+given above) to produce the <TT>jalice.py</TT> and
+<TT>jalice_wrap.cxx</TT> files.</LI>
+
+<LI>Compile all the J-Alice C++ source files (including the
+<TT>jalice_wrap.cxx</TT> file from the previous step) into a shared
+library.  When compiling these files, the symbol
+<TT>JALICE_BUILDING_DLL</TT> must be defined in order for the library
+to build correctly.</LI>
+
+<LI>Copy <TT>jalice.py</TT> and the shared library
+(<TT>_jalice.dll</TT> under Windows, <TT>_jalice.so</TT> under Unix)
+to the <TT>howie/backends</TT> directory.</LI>
+
+</UL>
+
+<HR>
+
+<H2>So give me the details, already!</H2>
+
+<P>Fine, fine.  Choose your platform.</P>
+
+<H3>How to build J-Alice under Unix</H3>
+
+<UL>
+<LI>Navigate to the <TT>j-alice-src-0.5/src/</TT> directory.</LI>
+<LI>Run <TT>make depend ; make ; make install</TT></LI>
+</UL>
+
+<P>J-Alice has been successfully compiled on the following platforms:
+Solaris 2.7 (gcc 2.95.3), FreeBSD 5.1 (gcc 3.2.2).</P>
+
+<H3>How to build J-Alice undere Windows (Visual C++ .NET)</H3>
+
+<UL>
+
+<LI>Open the <TT>j-alice-src-0.5/VC7/j-alice-py.sln</TT>
+solution.</LI>
+
+<LI>Select the <B>Release</B> configuration (most Python distributions
+don't ship with a debug build of PythonXY.lib).</LI>
+
+<LI>Build.</LI>
+
+<UL>
+
+<P>J-Alice has been successfully compiled with Visual Studio 6.0 in
+the past, but I no longer have a copy with which to maintain separate
+VC6 project files.  J-Alice was originally written with Codewarrior,
+so it shouldn't have too many problems building in CW either.  If
+you'd like to contribute project files from other compilers for
+J-Alice, please contact me through Sourceforge.</P>
+
+<HR>
+<H2>Troubleshooting</H2>
+
+<P>Having built J-Alice on a number of different Windows and Unix
+systems, I find myself stumbling over the same problems over and over.
+I'll collect the most common ones here.</P>
+
+<P>First of all, there are a bunch of cases where required header
+files were omitted, or non-standard header files (like
+<TT>unistd.h</TT>) were included outside of #ifdef blocks.  Those
+should be pretty straightforward to handle, so long as you make any
+changes inside an appropriate "#ifdef <YOUR PLATFORM>" block.  You
+don't want the fix for your platform to break the other platforms, do
+you?</P>
+
+<P>The other really big headaches are a couple of deprecated C++
+classes that the J-Alice authors adamantly insist on using:
+<TT>istreambuf_iterator</TT> and <TT>strstream</TT>.  I believe that I
+have successfully exorcised both classes from the J-Alice sources that
+ship with Howie.  I simple replaced <TT>strstream</TT> with the
+<TT>stringstream</TT> class (defined in <PRE><sstream></PRE>), and it
+seems to work fine.  The <TT>istreambuf_iterator</TT> was a little
+more complicated: the J-Alice authors recommend simply dropping in the
+standard <TT>istream_iterator</TT> in its place, but that doesn't
+really work at all (<TT>istream_iterator</TT> ignores all whitespace,
+while <TT>istreambuf_iterator</TT> does not, which makes it difficult
+to parse AIML files).  So I fell back on raw <TT>istream</TT>
+operations, and that seems to get the job done just fine.</P>
+
+</HTML>
