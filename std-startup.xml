@@ -23,45 +23,11 @@ Interpreter Version Info: <version/>
 <category>
 <pattern>LOAD AIML A</pattern>
 <template>
-<secure error="You are not allowed to load this AIML set">
-<learn>aiml/A.aiml</learn>
-<learn>aiml/B.aiml</learn>
-<learn>aiml/C.aiml</learn>
-<learn>aiml/D.aiml</learn>
-<learn>aiml/E.aiml</learn>
-<learn>aiml/F.aiml</learn>
-<learn>aiml/G.aiml</learn>
-<learn>aiml/H.aiml</learn>
-<learn>aiml/I.aiml</learn>
-<learn>aiml/J.aiml</learn>
-<learn>aiml/K.aiml</learn>
-<learn>aiml/L.aiml</learn>
-<learn>aiml/M.aiml</learn>
-<learn>aiml/N.aiml</learn>
-<learn>aiml/O.aiml</learn>
-<learn>aiml/P.aiml</learn>
-<learn>aiml/Q.aiml</learn>
-<learn>aiml/R.aiml</learn>
-<learn>aiml/S.aiml</learn>
-<learn>aiml/T.aiml</learn>
-<learn>aiml/U.aiml</learn>
-<learn>aiml/V.aiml</learn>
-<learn>aiml/W.aiml</learn>
-<learn>aiml/X.aiml</learn>
-<learn>aiml/Y.aiml</learn>
-<learn>aiml/Z.aiml</learn>
-<learn>aiml/1.aiml</learn>
-<learn>aiml/2.aiml</learn>
-<learn>aiml/3.aiml</learn>
-<learn>aiml/4.aiml</learn>
-<learn>aiml/5.aiml</learn>
-<learn>aiml/6.aiml</learn>
-<learn>aiml/8.aiml</learn>
-<learn>aiml/9.aiml</learn>
-<learn>aiml/star.aiml</learn>
-<learn>aiml/under.aiml</learn>
-<learn>aiml/topics.aiml</learn>
-</secure>
+<!-- only allow this operation if the "secure" predicate is set to yes. -->
+<condition name="secure">
+    <li value="yes"><learn>aiml/*.aiml</learn></li>
+    <li>You are not permitted to load AIML sets.</li>
+</condition>
 </template>
 </category>
 
@@ -69,59 +35,30 @@ Interpreter Version Info: <version/>
 <category>
 <pattern>LOAD AIML B</pattern>
 <template>
-<secure>
+<!-- only allow this operation if the "secure" predicate is set to yes. -->
+<condition name="secure">
+    <li value="yes">
+        <!-- Load standard AIML set -->
+        <learn>standard/std-*.aiml</learn>
 
-<!-- Load standard AIML set -->
-<learn>standard/std-65percent.aiml</learn>
-<learn>standard/std-atomic.aiml</learn>
-<learn>standard/std-botmaster.aiml</learn>
-<learn>standard/std-brain.aiml</learn>
-<learn>standard/std-connect.aiml</learn>
-<learn>standard/std-dictionary.aiml</learn>
-<learn>standard/std-disconnect.aiml</learn>
-<learn>standard/std-dont.aiml</learn>
-<learn>standard/std-errors.aiml</learn>
-<learn>standard/std-gender.aiml</learn>
-<learn>standard/std-geography.aiml</learn>
-<learn>standard/std-german.aiml</learn>
-<learn>standard/std-gossip.aiml</learn>
-<learn>standard/std-hello.aiml</learn>
-<learn>standard/std-inactivity.aiml</learn>
-<learn>standard/std-inventions.aiml</learn>
-<learn>standard/std-knowledge.aiml</learn>
-<learn>standard/std-lizards.aiml</learn>
-<learn>standard/std-login.aiml</learn>
-<learn>standard/std-numbers.aiml</learn>
-<learn>standard/std-personality.aiml</learn>
-<learn>standard/std-pickup.aiml</learn>
-<learn>standard/std-politics.aiml</learn>
-<learn>standard/std-profile.aiml</learn>
-<learn>standard/std-religion.aiml</learn>
-<learn>standard/std-robot.aiml</learn>
-<learn>standard/std-sales.aiml</learn>
-<learn>standard/std-sextalk.aiml</learn>
-<learn>standard/std-sports.aiml</learn>
-<learn>standard/std-srai.aiml</learn>
-<learn>standard/std-suffixes.aiml</learn>
-<learn>standard/std-that.aiml</learn>
-<learn>standard/std-turing.aiml</learn>
-<learn>standard/std-yesno.aiml</learn>
-
-<!-- Load some Howie-specific AIML files -->
-<learn>standard/howie-googlism.aiml</learn>
-<learn>standard/howie-rhyme.aiml</learn>
-
-</secure>
+        <!-- Load any Howie-specific AIML files -->
+        <learn>standard/howie-*.aiml</learn>
+    </li>
+    <li>You are not permitted to load AIML sets.</li>
+</condition>
 </template>
 </category>
 
 <!-- Loads an AIML file while the bot is running -->
-
 <category>
 <pattern>LOAD *</pattern>
-<secure error="You are not allowed to load files.">
-<template><learn><star/>.aiml</learn></template>
-</secure>
+<template>
+<!-- only allow this operation if the "secure" predicate is set to yes. -->
+<condition name="secure">
+    <li value="yes"><learn><star/></learn></li>
+    <li>You are not permitted to load AIML files.</li>
+</condition>
+</template>
 </category>
 
 </aiml>
