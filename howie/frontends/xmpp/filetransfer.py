@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: filetransfer.py,v 1.2 2004/09/13 14:40:47 cort Exp $
+# $Id: filetransfer.py,v 1.3 2004/10/12 17:32:01 cort Exp $
 
 from protocol import *
 from dispatcher import PlugIn
@@ -89,9 +89,9 @@ class IBB(PlugIn):
                     if stream['seq']==65536: stream['seq']=0
                     conn.send(Protocol('message',stream['direction'][1:],payload=[datanode,self._ampnode]))
                 else:
-                    """ нужно отправить пакет закрывающий поток на той стороне
-                        нужно сообщить локальному пользователю о том что данные успешно переданы
-                        нужно удалить локальный поток"""
+                    """ notify the other side about stream closing
+                        notify the local user about sucessfull send
+                        delete the local stream"""
                     conn.send(Protocol('iq',stream['direction'][1:],'set',payload=[Node(NS_IBB+' close',{'sid':sid})]))
                     conn.Event(self.DBG_LINE,'SUCCESSFULL SEND',stream)
                     del self._streams[sid]

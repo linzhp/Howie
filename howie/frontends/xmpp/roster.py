@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: roster.py,v 1.2 2004/09/13 14:40:47 cort Exp $
+# $Id: roster.py,v 1.3 2004/10/12 17:32:01 cort Exp $
 
 from protocol import *
 from client import PlugIn
@@ -45,6 +45,9 @@ class Roster(PlugIn):
     def RosterIqHandler(self,dis,stanza):
         for item in stanza.getTag('query').getTags('item'):
             jid=item.getAttr('jid')
+            if item.getAttr('subscription')=='remove':
+                if self._data.has_key(jid): del self._data[jid]
+                raise NodeProcessed
             self.DEBUG('Setting roster item %s...'%jid,'ok')
             if not self._data.has_key(jid): self._data[jid]={}
             self._data[jid]['name']=item.getAttr('name')
@@ -75,7 +78,7 @@ class Roster(PlugIn):
             res['timestamp']=pres.getTimestamp()
         elif typ=='unavailable' and item['resources'].has_key(jid.getResource()): del item['resources'][jid.getResource()]
         raise NodeProcessed
-# Надо ещё обработать type='error'
+# Need to handle type='error' also
 
     def _getItemData(self,jid,dataname):
         jid=jid[:(jid+'/').find('/')]
