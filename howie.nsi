@@ -63,7 +63,7 @@
 
 	# Description
 	LangString DESC_SecCopyMain ${LANG_ENGLISH} "Installs ${MY_PRODUCT} files to the application folder."
-	LangString DESC_SecCopyAddOns ${LANG_ENGLISH} "Installs some optional add-on modules to extend {MY_PRODUCT}'s capabilities."
+	LangString DESC_SecCopyAddOns ${LANG_ENGLISH} "Installs some optional add-on modules to extend ${MY_PRODUCT}'s capabilities."
     LangString DESC_SecCopyAcronym ${LANG_ENGLISH} "Handles 'what does X stand for' questions."
 	LangString DESC_SecCopyGooglism ${LANG_ENGLISH} "Handles 'who/what/where/when is X' questions."
 	LangString DESC_SecCopyRhyme ${LANG_ENGLISH} "Handles 'what rhymes with X' questions."
@@ -210,6 +210,7 @@ FunctionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyMain} $(DESC_SecCopyMain)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyAddOns} $(DESC_SecCopyAddOns)
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyAcronym} $(DESC_SecCopyAcronym)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyGooglism} $(DESC_SecCopyGooglism)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyRhyme} $(DESC_SecCopyRhyme)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
