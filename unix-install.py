@@ -5,10 +5,8 @@ make them executable (e.g. setting the executable bit, adding a bang-path to
 the first line of the script, etc.)
 """
 
-import glob
 import os
 import os.path
-import string
 import sys
 
 if __name__ == "__main__":
@@ -28,7 +26,8 @@ if __name__ == "__main__":
 
     
     for f in os.listdir(scriptsDir):
-        root, ext = os.path.splitext(f)
+        path = scriptsDir + f
+        root, ext = os.path.splitext(path)
         if not scriptTypes.has_key(ext):
             # This is not a recognized script file
             continue
@@ -42,3 +41,20 @@ if __name__ == "__main__":
             userpath = raw_input("Path to %s interpreter [%s]: " % (name, exepath))
             if len(userpath.strip()) > 0: exepath = userpath
             scriptTypes[ext] = (name,exe,exepath)
+
+        print "Processing %s..." % path
+        # Add a "bang-path" to the top of the script file.
+        newlines = ["#!%s\n" % exepath]
+        linenum = 0
+        for line in file(path):
+            linenum += 1
+            if linenum == 1 and line[:2] == "#!":
+                # Already has a bangpath; don't add it to newlines
+                continue
+            newlines.append(line)
+        outfile = file(path, "w")
+        outfile.writelines(newlines)
+        outfile.close()
+
+        # Set the executable bit for the script file
+        os.chmod(path, 0755)
