@@ -130,7 +130,7 @@ def submit(input, session):
 			logdir = config["general.logdir"]
 			if not os.path.isdir(logdir): os.mkdir(logdir)
 			logfile = file("%s/%s.log" % (logdir, session), "a")
-			logfile.write(time.strftime("[%m/%d %H:%M:%S]\n"))
+			logfile.write(time.strftime("[%m/%d/%Y %H:%M:%S]\n"))
 			logfile.write("%s: %s\n" % (session, input))
 			logfile.write("%s: %s\n" % (kernel.getBotPredicate("name"), response))
 			logfile.close()			
