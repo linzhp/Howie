@@ -64,26 +64,12 @@ def init():
 	kernel.setPredicate("secure", "yes") # secure the global session
 	kernel.bootstrap(learnFiles="std-startup.xml", commands="bootstrap")
 	kernel.setPredicate("secure", "no") # and unsecure it.
-	kernel.setBotPredicate("name", botName)
-	kernel.setBotPredicate("master", botMaster)
 
-	# The following bot predicates are hard-coded for now, just so
-	# that sensical replies can be given.  Eventually, there will be
-	# a facility for customizing such things.
-	botPreds = {
-		"gender": "female",
-		"location": "Springfield",
-		"birthday": "December 4th",
-		"favoritecolor": "yellow",
-		"favoritebook": "I, Robot by Isaac Asimov",
-		"favoritesong": "We Are The Robots by Kraftwerk",
-		"favoritefood": "hush puppies",
-		"favoriteband": "Howie Day",
-		"sign": "Sagittarius",
-		"birthplace": "Pennsylvania",		
-	}
-	for k,v in botPreds.items():
-		kernel.setBotPredicate(k,v)
+	# Initialize bot predicates
+	for k,v in config.items():
+		if k[:8] != "botinfo.":
+			continue
+		kernel.setBotPredicate(k[8:], v)
 
 	# Load persistent session data, if necessary
 	if sessionsPersist:
