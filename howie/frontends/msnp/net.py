@@ -48,7 +48,7 @@ class Connection:  # generic tcp connection wrapper
         return sent
 
     def send_data_line(self, line):
-        print "C:" + line #XXX
+        # print "C:" + line #XXX
         return self.send_data_all(line) + self.send_data_all('\r\n')
 
     def receive_data_line(self):
@@ -66,7 +66,7 @@ class Connection:  # generic tcp connection wrapper
                 cnt = 0
             buf = buf + in_byte
             if cnt == 2:
-                print "S:" + buf #XXX
+                # print "S:" + buf #XXX
                 return buf
 
     def break_(self):
