@@ -1,4 +1,4 @@
-PYTHON_INCDIR := $(shell python -c "import sys; print sys.prefix")/include/python2.3
+PYTHON_INCDIR = $(PYTHON_INCLUDE)
 
 JALICE_SRC = AimlWriter.cpp Element.cpp FlashResponder.cpp HTTPProcessor.cpp \
 	Handler.cpp IrcResponder.cpp Kernel.cpp Logger.cpp Main.cpp Match.cpp \
@@ -28,6 +28,7 @@ HOWIE_OBJ = $(HOWIE_SRC:.cpp=.o)
 SWIG_INPUT = jalice.i
 SWIG_SRC = jalice_wrap.cxx
 SWIG_OBJ = $(SWIG_SRC:.cxx=.o)
+SWIG_PY  = $(SWIG_INPUT:.i=.py)
 
 OBJ = $(JALICE_OBJ) $(HOWIE_OBJ) $(SWIG_OBJ)
 
@@ -35,7 +36,7 @@ OUTPUT = _jalice.so
 
 # Set up C++ compiler options
 CC = g++
-CCFLAGS = -fpic -DJALICE_BUILDING_DLL
+CCFLAGS = -O2 -s -fpic -DJALICE_BUILDING_DLL
 INCDIR = -I$(PYTHON_INCDIR)
 LIBDIR = 
 LIBS =
@@ -70,11 +71,12 @@ $(SWIG_SRC): $(SWIG_INPUT)
 	$(SWIG) $(SWIGFLAGS) -o $(SWIG_SRC) $(SWIG_INPUT)
 
 clean:
-	rm -f *.o $(OUTPUT) $(SWIG_SRC)
+	rm -f *.o $(OUTPUT) $(SWIG_SRC) $(SWIG_PY)
 
 install: $(OUTPUT)
+	strip $(OUTPUT)
 	cp $(OUTPUT) ../../howie/backends/
-	cp jalice.py ../../howie/backends/
+	cp $(SWIG_PY) ../../howie/backends/
 
 depend: $(JALICE_SRC) $(JALICE_HDR)
 	touch -f Makefile.depend
