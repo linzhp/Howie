@@ -108,7 +108,7 @@ Interpreter Version Info: <version/>
 <learn>standard/std-yesno.aiml</learn>
 
 <!-- Load some Howie-specific AIML files -->
-<learn>standard/dev-googlism.aiml</learn>
+<learn>standard/howie-googlism.aiml</learn>
 
 </secure>
 </template>
