@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import shelve
 import sys
 import string

@@ -1,7 +1,8 @@
+#!/usr/bin/python
 """
 Acronym Decoder v1.0
 
-usage: acronym.py [-max N] --f] A.C.R.O.N.Y.M.
+usage: acronym.py [-max N] [-f] A.C.R.O.N.Y.M.
 
 Prints the known expansions of the specified acronym.  If the optional -max
 parameter is specified, at most N matches will be output.  If -f is passed,
@@ -82,7 +83,9 @@ if __name__ == "__main__":
             maxMatches = int(a)
         elif o == "-f":
             friendlyMode = True
-    
+    if len(args) != 1:
+        usage()
+        sys.exit(2)
     
     # format the acronym to search for
     acro = formatAcro(args[0])

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import mutex
 import random
 import re
