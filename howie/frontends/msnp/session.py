@@ -573,7 +573,7 @@ class Session(_Session):
         self.friend_list.ver = ver
  
         friend = self.friend_list.get_friend(passport_id, list_)
-        if friend != None:
+        if friend != None and group != None:
             friend.add_to_group(group)
         else:
             if group != None:
