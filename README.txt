@@ -1,6 +1,6 @@
 Howie - A Conversational AI Bot
 (http://howie.sourceforge.net/)
-Copyright (C) 2003-2004 Cort Stratton (cort@andrew.cmu.edu)
+Copyright (C) 2003-2004 Cort Stratton (cortATcortstrattonDOTorg)
 
 ABOUT HOWIE
 -----------

@@ -1,6 +1,6 @@
 # howie.nsi
 #
-# Author: Cort Stratton (cort@andrew.cmu.edu)
+# Author: Cort Stratton (cortATcortstrattonDOTorg)
 #
 
 !include "MUI.nsh"

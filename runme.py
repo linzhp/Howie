@@ -3,7 +3,7 @@
 """
 HOWIE
 Description: Magical conversational/sysadmin bot.
-Author: Cort Stratton (cort@andrew.cmu.edu)
+Author: Cort Stratton (cortATcortstrattonDOTorg)
 
 Usage: runme.py [OPTIONS]
 
