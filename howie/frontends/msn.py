@@ -50,11 +50,13 @@ class MsnListener(msnp.SessionCallbacks):
         if list_ == msnp.Lists.REVERSE:
             # somebody's made us a friend.  Add them to our list as well.
             print "%s (%s) wants us to be his friend!" % (passport_id, display_name)
-            self._session.add_friend(msnp.Lists.ALLOW, passport_id, display_name)
+            self._session.add_friend(msnp.Lists.ALLOW, passport_id)
+            self._session.add_friend(msnp.Lists.FORWARD, passport_id)
+            print "%s is now our friend!" % passport_id
 
     def friend_list_updated(self, friend_list):
         friends = []
-        #friends.extend(self._session.friend_list.get_friends(msnp.Lists.ALLOW))
+        friends.extend(self._session.friend_list.get_friends(msnp.Lists.ALLOW))
         #friends.extend(self._session.friend_list.get_friends(msnp.Lists.BLOCK))
         friends.extend(self._session.friend_list.get_friends(msnp.Lists.FORWARD))
         #friends.extend(self._session.friend_list.get_friends(msnp.Lists.REVERSE))
@@ -94,7 +96,6 @@ class FrontEndMSN(frontend.IFrontEnd):
         print "FrontEndMSN.display() is not yet implemented"
 
     def go(self):
-
         # serve forever
         while(True):
             self._session.process(chats = True)
