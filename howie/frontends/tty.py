@@ -26,11 +26,14 @@ class FrontEndTTY(frontend.IFrontEnd):
     implement a new front-end for Howie.
     """    
     def go(self):
+        self._sessionID = "localhost@TTY"
+        import howie.core
+        howie.core.kernel.setPredicate("secure", "yes", self._sessionID)
         while True:
             input = raw_input(">>> ")
-            response = self.submit(input, "localhost")
+            response = self.submit(input, self._sessionID)
             #time.sleep(random.random() * 4)
-            self.display(response, "localhost")
+            self.display(response, self._sessionID)
     
     def display(self, output, user):
         print output
