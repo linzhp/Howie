@@ -58,7 +58,10 @@ def main():
 			configFile = a
 		elif o in ["-l","--local"]:
 			localMode = "yes"
-	
+
+	errorLogFile = "error.log"
+	sys.stderr = open(errorLogFile, "a")
+
 	# Read config file
 	config = howie.configFile.load(configFile)
 
@@ -72,6 +75,10 @@ def main():
 
 	# Bootstrap the AI.
 	howie.core.init()
+
+	# Loop forever until the user exits.
+	while True:
+		time.sleep(10)
 
 # if this file is run directly, call main.
 if __name__ == "__main__":

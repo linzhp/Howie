@@ -1,3 +1,5 @@
+ - SF Bug #1050427: Howie now reliably disconnects and quits when you give him
+   a control-C.
  - Upgraded to PyAIML version 0.8.5.  This version includes standards-compliant
    whitespace handling, and fixes a handful of Unicode and crash bugs.
  - JABBER: Upgraded to xmpppy 0.2pre2.
@@ -15,12 +17,12 @@
  - IRC: Added support for the IRC protocol (courtesy of Jamie Turner).
  - JABBER: Modified jabber back-end to use the xmpppy package, instead of the
    apparently-defunct jabber.py.
- - MSN: Applied patch to msnp module to fix problem with redirect messages while
-   logging in.
+ - MSN: Applied patch to msnp module to fix problem with redirect messages
+   while logging in.
  - MSN: Fixed bug in msnp's __process_add() function.
  - MSN: Fixed bug in MSN frontend's friend-adding code.
- - XMLRPC: Wrapped call to register_introspection_functions() to allow it to run
-   without crashing older versions of Python.
+ - XMLRPC: Wrapped call to register_introspection_functions() to allow it to
+   run without crashing older versions of Python.
 
 
 0.5.0:
@@ -36,16 +38,17 @@
    bot predicates (accessed through the AIML <bot> element).
 
 1/10/2004:
- - Upgraded AIML interpreter to PyAIML version 0.8.1.  Fixes a problem with "system"
-   tags written for Windows not working on UNIX, and vice versa.  For cross-platform
-   compatibility, all "system" tags should use UNIX-style pathnames (e.g.
-   "path/to/script").
- - Added "unix-install.py" helper script to automate some necessary setup steps on UNIX
-   platforms.
- - Removed some Python 2.3-specific features; Howie should now run on Python 2.2.x.
- - Howie now prompts for screenname/password at startup if the values aren't specified
-   in the config file (useful for those who don't like leaving passwords lying around
-   in plaintext on disk).
+ - Upgraded AIML interpreter to PyAIML version 0.8.1.  Fixes a problem with
+   "system" tags written for Windows not working on UNIX, and vice versa.  For
+   cross-platform compatibility, all "system" tags should use UNIX-style
+   pathnames (e.g. "path/to/script").
+ - Added "unix-install.py" helper script to automate some necessary setup
+   steps on UNIX platforms.
+ - Removed some Python 2.3-specific features; Howie should now run on Python
+   2.2.x.
+ - Howie now prompts for screenname/password at startup if the values aren't
+   specified in the config file (useful for those who don't like leaving
+   passwords lying around in plaintext on disk).
  - Reorganized and commented configuration file.
 
 1/9/2004:
@@ -53,9 +56,9 @@
  - Upgraded msnp package to v0.4.0 (the frontend still doesn't work, though).
  - Added XMLRPC front-end.
  - Added support for "what does X stand for" questions (acronym expansion).
- - Added support for persistent session data (so Howie remembers the people he's
-   talked to even after he's rebooted).  To enable, set "sessionspersist" to "yes"
-   in howie.ini
+ - Added support for persistent session data (so Howie remembers the people
+   he's talked to even after he's rebooted).  To enable, set "sessionspersist"
+   to "yes" in howie.ini.
 
 12/17/2003:
  - New pure-Python AIML interpreter (out with J-Alice, in with PyAIML,

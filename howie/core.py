@@ -36,6 +36,7 @@ def _addFrontEnd(name, cls):
 	
 	# Create a thread to run this frontend
 	feThread = threading.Thread(name=name, target=feInst.go)
+	feThread.setDaemon(True)
 	feThread.start()
 	_frontends[name] = ActiveFrontEnd(feInst, feThread)
 
