@@ -12,6 +12,6 @@ setup(name="Howie",
 	data_files=[
 		("scripts", glob.glob("scripts\\*.py")),
 		("standard", glob.glob("standard\\*.aiml")),
-		(".", ("j-alice.ini", "std-startup.xml", "README.txt", "substitutions.xml", "my-howie.aiml", "howie.ini")),	  
+		(".", ("std-startup.xml", "README.txt", "CHANGES.txt", "my-howie.aiml", "howie.ini")),	  
 	],
 )
