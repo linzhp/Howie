@@ -21,11 +21,11 @@ perform a few simple remote system-administration tasks!
 
 Howie is Connected.
 You can communicate with Howie in a number of different ways: AIM, MSN
-Messenger (in progress), XML-RPC, or locally on the command-line. Future
-versions will include interfaces for HTTP, IRC, ICQ, Zephyr, and more!
-Howie's knowledge base is made up of a wide variety of Internet resources.
-If you find something that he can't do, it's usually pretty straightforward
-to teach him!
+Messenger, XML-RPC, or locally on the command-line. Future versions will
+include interfaces for HTTP, IRC, ICQ, Zephyr, and more! Howie's knowledge
+base is made up of a wide variety of Internet resources. If you find
+something that he can't do, it's usually pretty straightforward to teach
+him!
 
 SYSTEM REQUIREMENTS
 -------------------
