@@ -36,20 +36,36 @@ INSTALLATION
 
 CHANGELOG
 ---------
+12/1/2003: "Apocalypse Howie (Dev-20031201) is released
+ - Fixed bug in front-end loader that required a bunch of otherwise
+   unnecessary Python scripts to be included with a binary installation.
+ - Fixed broken sync-mode <system> tags on Win32 builds!  This is huge --
+   sync-mode <system> tags will be the keystone of Howie's future
+   functionality.
+ - Added a "scripts" directory, as a repository for the add-on commands
+   that Howie will run from inside <system> tags.
+ - Added a "my-howie.aiml" file for users to fill with their own custom AIML
+   responses.
+ - Moved Googlisms back-end into a stand-alone Python script, triggered through
+   AIML using a sync-mode <system> tag.  This is the future!
+
 11/21/2003: "Return of the Howie Extended Edition" (Dev-20031121) is released
  - Windows binary distribution is now a self-contained executable.
    On Windows systems, Python is no longer required to run Howie.
  - Added documentation folder, mostly pertaining to compiling the sources.
+
 11/19/2003: "Return Of The Howie" (Dev-20031119) is released
- - Updated Jalice to version 0.5.  See the Jalice homepage for summary
+ - Updated J-Alice to version 0.5.  See the J-Alice homepage for summary
    of new features.
+
 5/30/2003: "Finding Howie" (Dev-20030530) is released
- - Fixed Jalice bug which caused Howie to repeat his first response
+ - Fixed J-Alice bug which caused Howie to repeat his first response
    over and over.
  - Massive code reorganization makes adding new frontends a breeze!
  - Connection parameters are read from the new configuration file,
    howie.ini.
  - Added command-line interface (force command-line only with the -l flag).
+
 5/15/2003: "Howie Reloaded" (Dev-20030515) is released
  - initial pre-pre-alpha version, Windows installer only.
  - AIM only

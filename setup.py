@@ -10,7 +10,7 @@ setup(name="Howie",
 	url="http://howie.sourceforge.net/",
 	scripts=["runme.py"],
 	data_files=[
-		("scripts", glob.glob("scripts\\*.*")),
+		("scripts", glob.glob("scripts\\*.py")),
 		("standard", glob.glob("standard\\*.aiml")),
 		(".", ("j-alice.ini", "std-startup.xml", "README.txt", "substitutions.xml", "my-howie.aiml", "howie.ini")),	  
 	],

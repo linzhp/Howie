@@ -12,7 +12,7 @@
 	Var MY_PRODUCT
 	Var MY_VERSION
 	!define MY_PRODUCT "Howie"
-	!define MY_VERSION "20031121"
+	!define MY_VERSION "20031201"
 	
 	# General
 	Name "${MY_PRODUCT}"
@@ -194,7 +194,7 @@ Section "Uninstall"
 		StrCmp $MUI_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
 	startMenuDeleteLoopDone:
 
-	DeleteRegKey /ifempty HKCU "Software\${MY_PRODUCT}"
+	DeleteRegKey /ifempty HKLM "Software\${MY_PRODUCT}"
 SectionEnd
 
 #--------------------------------
