@@ -1,15 +1,15 @@
 <substitutions>
 
 <!-- Substitutions -->
+<substitute name="normal" find="," replace=" "/>
+
+<substitute name="normal" find=":-)" replace=" SMILE "/>
 <substitute name="normal" find=":-)" replace=" SMILE "/>
 <substitute name="normal" find=":)" replace=" SMILE "/>
-<substitute name="normal" find=";)" replace=" WINK "/>
-<substitute name="normal" find=";-)" replace=" WINK "/>
-<substitute name="normal" find=";-P" replace=" WINK "/>
+<substitute name="normal" find=";)" replace=" SMILE "/>
+<substitute name="normal" find=";-)" replace=" SMILE "/>
+<substitute name="normal" find=";-P" replace=" SMILE "/>
 <substitute name="normal" find=":-*" replace=" KISS "/>
-<substitute name="normal" find=":-(" replace=" POUT "/>
-<substitute name="normal" find=";-(" replace=" POUT "/>
-<substitute name="normal" find="&amp;" replace="&"/>
 <substitute name="normal" find=" L A " replace=" LA "/>
 <substitute name="normal" find=" O K " replace=" OK "/>
 <substitute name="normal" find=" P S " replace=" PS "/>
@@ -25,7 +25,6 @@
 <substitute name="normal" find=" PRACTICE " replace=" PRACTISE "/>
 <substitute name="normal" find=" REDUCTIONALISM " replace=" REDUCTIONISM "/>
 <substitute name="normal" find=" LOEBNER PRICE " replace=" LOEBNER PRIZE "/>
-<substitute name="normal" find=" ITS " replace=" IT IS "/>
 <substitute name="normal" find=" ITS A " replace=" IT IS A "/>
 <substitute name="normal" find=" NOI " replace=" YES I "/>
 <substitute name="normal" find=" FAV " replace=" FAVORITE "/>
@@ -175,36 +174,52 @@
 <substitute name="normal" find=" UR " replace=" YOUR "/>
 <substitute name="normal" find=" JON BEAR " replace=" JON BAER "/>
 <substitute name="normal" find=" WHATS " replace=" WHAT IS "/>
-<substitute name="normal" find="N'T " replace=" NOT "/>
-<substitute name="normal" find="'S " replace=" IS "/>
-<substitute name="normal" find="," replace=" "/>
 
+<!-- Person -->
 <substitute name="person" find=" MYSELF " replace=" YOURSELF "/>
-<substitute name="person" find=" ME " replace=" YOU "/>
-<substitute name="person" find=" ME," replace=" YOU,"/>
-<substitute name="person" find=" YOUR " replace=" MY "/>
 <substitute name="person" find=" YOURSELF " replace=" MYSELF "/>
-<substitute name="person" find=" YOU " replace=" ME "/>
-<substitute name="person" find=" YOU," replace=" ME,"/>
-<substitute name="person" find=" MY " replace=" YOUR "/>
-<substitute name="person" find=" ARE YOU " replace=" AM I "/>
-<substitute name="person" find=" YOU ARE " replace=" I AM "/>
+<substitute name="person" find=" ME " replace=" YOU "/>
 <substitute name="person" find=" I " replace=" YOU "/>
-<substitute name="person" find=" AM " replace=" ARE "/>
-<substitute name="person" find=" AND YOU " replace=" AND I "/>
+<substitute name="person" find=" YOU " replace=" ME "/>
+<substitute name="person" find=" YOUR " replace=" MY "/>
+<substitute name="person" find=" MY " replace=" YOUR "/>
 
+<!-- Gender -->
 <substitute name="gender" find=" HE " replace=" SHE "/>
 <substitute name="gender" find=" SHE " replace=" HE "/>
-<substitute name="gender" find=" HIM " replace=" HER "/>
-<substitute name="gender" find=" HER " replace=" HIS "/>
 <substitute name="gender" find=" HIS " replace=" HER "/>
-<substitute name="gender" find=" HERS " replace=" HIS "/>
-<substitute name="gender" find=" TO HER " replace=" TO HIM "/>
-<substitute name="gender" find=" FOR HER " replace=" FOR HIM "/>
-<substitute name="gender" find=" WITH HER " replace=" WITH HIM "/>
-<substitute name="gender" find=" ON HER " replace=" ON HIM "/>
-<substitute name="gender" find=" IN HER " replace=" IN HIM "/>
+<substitute name="gender" find=" HER " replace=" HIS "/>
 
-<substitute name="output" find=" i " replace=" I "/>
+<!-- Encoder -->
+<substitute name="encoder" find="a" replace="ab"/>
+<substitute name="encoder" find="e" replace="ef"/>
+<substitute name="encoder" find="i" replace="ij"/>
+<substitute name="encoder" find="o" replace="op"/>
+<substitute name="encoder" find="u" replace="uv"/>
+<substitute name="encoder" find="y" replace="yz"/>
+<substitute name="encoder" find="b" replace="w"/>
+<substitute name="encoder" find="d" replace="s"/>
+<substitute name="encoder" find="g" replace="q"/>
+<substitute name="encoder" find="k" replace="m"/>
+<substitute name="encoder" find="m" replace="k"/>
+<substitute name="encoder" find="q" replace="g"/>
+<substitute name="encoder" find="s" replace="d"/>
+<substitute name="encoder" find="w" replace="b"/>
+
+<!-- Decoder -->
+<substitute name="decoder" find="ab" replace="a"/>
+<substitute name="decoder" find="ef" replace="e"/>
+<substitute name="decoder" find="ij" replace="i"/>
+<substitute name="decoder" find="op" replace="o/>
+<substitute name="decoder" find="uv" replace="u"/>
+<substitute name="decoder" find="yz" replace="y"/>
+<substitute name="decoder" find="w" replace="b"/>
+<substitute name="decoder" find="s" replace="d"/>
+<substitute name="decoder" find="q" replace="g"/>
+<substitute name="decoder" find="m" replace="k"/>
+<substitute name="decoder" find="k" replace="m"/>
+<substitute name="decoder" find="g" replace="q"/>
+<substitute name="decoder" find="d" replace="s"/>
+<substitute name="decoder" find="b" replace="w"/>
 
 </substitutions>
