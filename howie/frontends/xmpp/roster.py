@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: roster.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: roster.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 from protocol import *
 from client import PlugIn

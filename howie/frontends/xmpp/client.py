@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: client.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: client.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 import debug
 Debug=debug
@@ -35,7 +35,7 @@ Debug.Debug.colors['warn']=debug.color_yellow
 Debug.Debug.colors['error']=debug.color_red
 Debug.Debug.colors['start']=debug.color_dark_gray
 Debug.Debug.colors['stop']=debug.color_dark_gray
-Debug.Debug.colors['sent']=debug.color_blue
+Debug.Debug.colors['sent']=debug.color_yellow
 Debug.Debug.colors['got']=debug.color_bright_cyan
 
 DBG_CLIENT='client'
@@ -47,10 +47,12 @@ class PlugIn:
         self.DBG_LINE=self.__class__.__name__.lower()
 
     def PlugIn(self,owner):
+        self._owner=owner
         if self.DBG_LINE not in owner.debug_flags:
             owner.debug_flags.append(self.DBG_LINE)
-        self._owner=owner
         self.DEBUG('Plugging %s into %s'%(self,self._owner),'start')
+        if owner.__dict__.has_key(self.__class__.__name__):
+            return self.DEBUG('Plugging ignored: another instance already plugged.','error')
         self._old_owners_methods=[]
         for method in self._exported_methods:
             if owner.__dict__.has_key(method.__name__):
@@ -111,6 +113,7 @@ class CommonClient:
 
     def reconnectAndReauth(self):
         handlerssave=self.Dispatcher.dumpHandlers()
+        self.Dispatcher.PlugOut()
         if not self.connect(server=self._Server,proxy=self._Proxy): return
         if not self.auth(self._User,self._Password,self._Resource): return
         self.Dispatcher.restoreHandlers(handlerssave)
@@ -144,7 +147,8 @@ class Client(CommonClient):
 
     def auth(self,user,password,resource=''):
         self._User,self._Password,self._Resource=user,password,resource
-        auth.SASL(user,password).PlugIn(self)
+        auth.SASL().PlugIn(self)
+        self.SASL.auth(user,password)
         while not self.Dispatcher.Stream._document_attrs and self.Process(): pass
         if self.Dispatcher.Stream._document_attrs.has_key('version') and self.Dispatcher.Stream._document_attrs['version']=='1.0':
             while not self.Dispatcher.Stream.features and self.Process(): pass      # If we get version 1.0 stream the features tag MUST BE presented

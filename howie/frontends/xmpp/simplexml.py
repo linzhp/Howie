@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: simplexml.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: simplexml.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 import xml.parsers.expat
 
@@ -45,18 +45,21 @@ class Node:
         if parent: self.parent = parent
         if self.parent and not self.namespace: self.namespace=self.parent.namespace
         for attr in attrs.keys():
-            self.attrs[attr]=ustr(attrs[attr])
+            self.attrs[attr]=attrs[attr]
         if type(payload) in (type(''),type(u'')): payload=[payload]
         for i in payload:
             if type(i)==type(self): self.addChild(node=i)
             else: self.data.append(ustr(i))
+        self.T=T(self)
+        self.NT=NT(self)
+
     def __str__(self,parent=None,fancy=0):
-        s = (fancy-1) * 2 * ' ' + "<" + self.name  
+        s = (fancy-1) * 2 * ' ' + "<" + self.name
         if self.namespace:
             if parent and parent.namespace!=self.namespace:
                 s = s + ' xmlns="%s"'%self.namespace
         for key in self.attrs.keys():
-            val = self.attrs[key]
+            val = ustr(self.attrs[key])
             s = s + ' %s="%s"' % ( key, XMLescape(val) )
         s = s + ">"
         cnt = 0 
@@ -128,7 +131,7 @@ class Node:
                 else: nodes.append(node)
             if one and nodes: return nodes[0]
         if not one: return nodes
-    def setAttr(self, key, val): self.attrs[key]=ustr(val)
+    def setAttr(self, key, val): self.attrs[key]=val
     def setData(self, data): self.data=[ustr(data)]
     def setName(self,val): self.name = val
     def setNamespace(self, namespace): self.namespace=namespace
@@ -142,12 +145,29 @@ class Node:
         if node: return node
         else: return self.addChild(name, attrs, namespace=namespace)
     def setTagAttr(self,tag,attr,val):
-        try: self.getTag(tag).attrs[attr]=ustr(val)
-        except: self.addChild(tag,attrs={attr:ustr(val)})
+        try: self.getTag(tag).attrs[attr]=val
+        except: self.addChild(tag,attrs={attr:val})
     def setTagData(self,tag,val,attrs={}):
         try: self.getTag(tag,attrs).setData(ustr(val))
         except: self.addChild(tag,attrs,payload=[ustr(val)])
     def has_attr(self,key): return self.attrs.has_key(key)
+    def __getitem__(self,item): return self.getAttr(item)
+    def __setitem__(self,item,val): return self.setAttr(item,val)
+    def __delitem__(self,item): return self.delAttr(item,val)
+
+class T:
+    def __init__(self,node): self.__dict__['node']=node
+    def __getattr__(self,attr): return self.node.setTag(attr)
+    def __setattr__(self,attr,val):
+        if isinstance(val,Node): Node.__init__(self.node.setTag(attr),node=val)
+        else: return self.node.setTagData(attr,val)
+    def __delattr__(self,attr): return self.node.delChild(attr)
+
+class NT(T):
+    def __getattr__(self,attr): return self.node.addChild(attr)
+    def __setattr__(self,attr,val):
+        if isinstance(val,Node): self.node.addChild(attr,node=val)
+        else: return self.node.addChild(attr,payload=[val])
 
 DBG_NODEBUILDER = 'nodebuilder'
 class NodeBuilder:
@@ -156,9 +176,10 @@ class NodeBuilder:
     def __init__(self,data=None,initial_node=None):
         self.DEBUG(DBG_NODEBUILDER, "Preparing to handle incoming XML stream.", 'start')
         self._parser = xml.parsers.expat.ParserCreate(namespace_separator=' ')
-        self._parser.StartElementHandler  = self.starttag
-        self._parser.EndElementHandler    = self.endtag
-        self._parser.CharacterDataHandler = self.handle_data
+        self._parser.StartElementHandler       = self.starttag
+        self._parser.EndElementHandler         = self.endtag
+        self._parser.CharacterDataHandler      = self.handle_data
+        self._parser.StartNamespaceDeclHandler = self.handle_namespace_start
         self.Parse = self._parser.Parse
 
         self.__depth = 0
@@ -166,15 +187,27 @@ class NodeBuilder:
         self._document_attrs = None
         self._mini_dom=initial_node
         self.last_is_data = 1
+        self._ptr=None
+        self.namespaces={"http://www.w3.org/XML/1998/namespace":'xml:'}
+        self.xmlns="http://www.w3.org/XML/1998/namespace"
 
         if data: self._parser.Parse(data,1)
 
+    def destroy(self):
+        self._parser.StartElementHandler       = None
+        self._parser.EndElementHandler         = None
+        self._parser.CharacterDataHandler      = None
+        self._parser.StartNamespaceDeclHandler = None
+
     def starttag(self, tag, attrs):
         """XML Parser callback"""
-        for attr in attrs.keys():       # FIXME: Crude hack. And it also slows down the whole library considerably.
-            if attr[:37]=="http://www.w3.org/XML/1998/namespace ":
-                attrs['xml:'+attr[37:]]=attrs[attr]
-                del attrs[attr]
+        attlist=attrs.keys()       #
+        for attr in attlist:       # FIXME: Crude hack. And it also slows down the whole library considerably.
+            sp=attr.rfind(" ")     #
+            if sp==-1: continue    #
+            ns=attr[:sp]           #
+            attrs[self.namespaces[ns]+attr[sp+1:]]=attrs[attr]
+            del attrs[attr]        #
         self.__depth += 1
         self.DEBUG(DBG_NODEBUILDER, "DEPTH -> %i , tag -> %s, attrs -> %s" % (self.__depth, tag, `attrs`), 'down')
         if self.__depth == self._dispatch_depth:
@@ -186,6 +219,8 @@ class NodeBuilder:
             self._ptr = self._ptr.kids[-1]
         if self.__depth == 1:
             self._document_attrs = attrs
+            ns, name = (['']+tag.split())[-2:]
+            self.stream_header_received(ns, name, attrs)
         if not self.last_is_data and self._ptr.parent: self._ptr.parent.data.append('')
         self.last_is_data = 0
 
@@ -200,18 +235,25 @@ class NodeBuilder:
             self.DEBUG(DBG_NODEBUILDER, "Got higher than dispatch level. Stream terminated?", 'stop')
         self.__depth -= 1
         self.last_is_data = 0
+        if self.__depth == 0: self.stream_footer_received()
 
     def handle_data(self, data):
         """XML Parser callback"""
         self.DEBUG(DBG_NODEBUILDER, data, 'data')
+        if not self._ptr: return
         if self.last_is_data:
             self._ptr.data[-1] += data
         else:
             self._ptr.data.append(data)
             self.last_is_data = 1
 
+    def handle_namespace_start(self, prefix, uri):
+        if prefix: self.namespaces[uri]=prefix+':'
+        else: self.xmlns=uri
     def DEBUG(self, level, text, comment=None): pass
     def getDom(self): return self._mini_dom
     def dispatch(self,stanza): pass
+    def stream_header_received(self,ns,tag,attrs): pass
+    def stream_footer_received(self): pass
 
 def XML2Node(xml): return NodeBuilder(xml).getDom()

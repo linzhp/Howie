@@ -12,12 +12,12 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: transports.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: transports.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 import socket,select,base64,dispatcher
 from simplexml import ustr
 from client import PlugIn
-from protocol import NS_TLS
+from protocol import *
 
 class error:
     def __init__(self,comment):
@@ -61,7 +61,7 @@ class TCPsocket(PlugIn):
         del self._owner.Connection
 
     def receive(self):
-        """Reads incoming data. Blocks until done. Calls self.disconnected(self) if appropriate."""
+        """Reads all pending incoming data. Calls owner's disconnected() method if appropriate."""
         try: received = self._recv(1024)
         except: received = ''
 
@@ -147,18 +147,26 @@ class TLS(PlugIn):
         PlugIn.PlugIn(self,owner)
         DBG_LINE='TLS'
         if now: return self._startSSL()
-        if self._owner.Dispatcher.Stream.features: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
-        else: self._owner.RegisterHandlerOnce('features',self.FeaturesHandler)
+        if self._owner.Dispatcher.Stream.features:
+            try: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
+            except NodeProcessed: pass
+        else: self._owner.RegisterHandlerOnce('features',self.FeaturesHandler,xmlns=NS_STREAMS)
         self.starttls=None
+
+    def plugout(self,owner,now=0):
+        self._owner.UnregisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
+        self._owner.UnregisterHandlerOnce('proceed',self.StartTLSHandler,xmlns=NS_TLS)
+        self._owner.UnregisterHandlerOnce('failure',self.StartTLSHandler,xmlns=NS_TLS)
 
     def FeaturesHandler(self, conn, feats):
         if not feats.getTag('starttls',namespace=NS_TLS):
             self.DEBUG("TLS unsupported by remote server.",'warn')
             return
         self.DEBUG("TLS supported by remote server. Requesting TLS start.",'ok')
-        self._owner.RegisterHandlerOnce('proceed',self.StartTLSHandler)
-        self._owner.RegisterHandlerOnce('failure',self.StartTLSHandler)
+        self._owner.RegisterHandlerOnce('proceed',self.StartTLSHandler,xmlns=NS_TLS)
+        self._owner.RegisterHandlerOnce('failure',self.StartTLSHandler,xmlns=NS_TLS)
         self._owner.Connection.send('<starttls xmlns="%s"/>'%NS_TLS)
+        raise NodeProcessed
 
     def _startSSL(self):
         tcpsock=self._owner.Connection

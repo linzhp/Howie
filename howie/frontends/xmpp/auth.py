@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: auth.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: auth.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 from protocol import *
 from client import PlugIn
@@ -80,16 +80,22 @@ class NonSASL(PlugIn):
         else: self.handshake=-1
 
 class SASL(PlugIn):
-    def __init__(self,username,password):
-        PlugIn.__init__(self)
-        self.DBG_LINE='SASL_auth'
-        self.username=username
-        self.password=password
+    def plugin(self,owner):
         self.startsasl=None
 
-    def plugin(self,owner):
-        if self._owner.Dispatcher.Stream.features: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
-        else: self._owner.RegisterHandler('features',self.FeaturesHandler)
+    def auth(self,username,password):
+        self.username=username
+        self.password=password
+        if self._owner.Dispatcher.Stream.features:
+            try: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
+            except NodeProcessed: pass
+        else: self._owner.RegisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
+
+    def plugout(self):
+        self._owner.UnregisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
+        self._owner.UnregisterHandler('challenge',self.SASLHandler,xmlns=NS_SASL)
+        self._owner.UnregisterHandler('failure',self.SASLHandler,xmlns=NS_SASL)
+        self._owner.UnregisterHandler('success',self.SASLHandler,xmlns=NS_SASL)
 
     def FeaturesHandler(self,conn,feats):
         if not feats.getTag('mechanisms',namespace=NS_SASL):
@@ -99,9 +105,9 @@ class SASL(PlugIn):
         mecs=[]
         for mec in feats.getTag('mechanisms',namespace=NS_SASL).getTags('mechanism'):
             mecs.append(mec.getData())
-        self._owner.RegisterHandler('challenge',self.SASLHandler)
-        self._owner.RegisterHandler('failure',self.SASLHandler)
-        self._owner.RegisterHandler('success',self.SASLHandler)
+        self._owner.RegisterHandler('challenge',self.SASLHandler,xmlns=NS_SASL)
+        self._owner.RegisterHandler('failure',self.SASLHandler,xmlns=NS_SASL)
+        self._owner.RegisterHandler('success',self.SASLHandler,xmlns=NS_SASL)
         if "DIGEST-MD5" in mecs:
             node=Node('auth',attrs={'xmlns':NS_SASL,'mechanism':'DIGEST-MD5'})
         elif "PLAIN" in mecs:
@@ -113,6 +119,7 @@ class SASL(PlugIn):
             return
         self.startsasl='in-process'
         self._owner.send(node.__str__())
+        raise NodeProcessed
 
     def SASLHandler(self,conn,challenge):
         if challenge.getNamespace()<>NS_SASL: return
@@ -121,14 +128,14 @@ class SASL(PlugIn):
             try: reason=challenge.getChildren()[0]
             except: reason=challenge
             self.DEBUG('Failed SASL authentification: %s'%reason,'error')
-            return
+            raise NodeProcessed
         elif challenge.getName()=='success':
             self.startsasl='success'
             self.DEBUG('Successfully authenticated with remote server.','ok')
             self._owner.Dispatcher.PlugOut()
             dispatcher.Dispatcher().PlugIn(self._owner)
             self._owner.User=self.username
-            return
+            raise NodeProcessed
 ########################################3333
         incoming_data=challenge.getData()
         chal={}
@@ -166,7 +173,7 @@ class SASL(PlugIn):
         else: 
             self.startsasl='failure'
             self.DEBUG('Failed SASL authentification: unknown challenge','error')
-            return
+        raise NodeProcessed
 
 class Bind(PlugIn):
     def __init__(self):
@@ -175,8 +182,13 @@ class Bind(PlugIn):
         self.bound=None
 
     def plugin(self,owner):
-        if self._owner.Dispatcher.Stream.features: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
-        else: self._owner.RegisterHandler('features',self.FeaturesHandler)
+        if self._owner.Dispatcher.Stream.features:
+            try: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
+            except NodeProcessed: pass
+        else: self._owner.RegisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
+
+    def plugout(self,owner):
+        self._owner.UnregisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
 
     def FeaturesHandler(self,conn,feats):
         if not feats.getTag('bind',namespace=NS_BIND):
@@ -195,9 +207,13 @@ class Bind(PlugIn):
         if isResultNode(resp):
             self.bound.append(resp.getTag('bind').getTagData('jid'))
             self.DEBUG('Successfully bound %s.'%self.bound[-1],'ok')
+            jid=JID(resp.getTag('bind').getTagData('jid'))
+            self._owner.User=jid.getNode()
+            self._owner.Resource=jid.getResource()
             resp=self._owner.SendAndWaitForResponse(Protocol('iq',typ='set',payload=[Node('session',attrs={'xmlns':NS_SESSION})]))
             if isResultNode(resp):
                 self.DEBUG('Successfully opened session.','ok')
+                self.session=1
                 return 'ok'
             else:
                 self.DEBUG('Session open failed.','error')

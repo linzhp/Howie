@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: dispatcher.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: dispatcher.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 import simplexml,time
 from protocol import *
@@ -38,18 +38,28 @@ class Dispatcher(PlugIn):
     def dumpHandlers(self): return self.handlers
     def restoreHandlers(self,handlers): self.handlers=handlers
 
-    def plugin(self, owner):
-        self.RegisterProtocol('unknown',Protocol)
+    def _init(self):
+        self.RegisterNamespace('unknown')
+        self.RegisterNamespace(NS_CLIENT)
         self.RegisterProtocol('iq',Iq)
         self.RegisterProtocol('presence',Presence)
         self.RegisterProtocol('message',Message)
+        self.RegisterDefaultHandler(self.returnStanzaHandler)
+
+    def plugin(self, owner):
+        self._init()
         for method in self._old_owners_methods:
             if method.__name__=='send': self._owner_send=method; break
         self._owner.lastErrNode=None
         self._owner.lastErr=None
         self._owner.lastErrCode=None
         self.StreamInit()
-#        self.RegisterDefaultHandler(self.returnStanzaHandler)   # Unrem in 0.2
+
+    def plugout(self):
+        self.Stream.dispatch=None
+        self.Stream.DEBUG=None
+        self.Stream.features=None
+        self.Stream.destroy()
 
     def StreamInit(self):
         self.Stream=simplexml.NodeBuilder()
@@ -72,33 +82,44 @@ class Dispatcher(PlugIn):
             return len(data)
         return '0'	# It means that nothing is received but link is alive.
         
-    def RegisterProtocol(self,tag_name,Proto,order='info'):
-        self.DEBUG('Registering protocol "%s" as %s'%(tag_name,Proto), order)
-        self.handlers[tag_name]={type:Proto, 'default':[]}
+    def RegisterNamespace(self,xmlns,order='info'):
+        self.DEBUG('Registering namespace "%s"'%xmlns,order)
+        self.handlers[xmlns]={}
+        self.RegisterProtocol('unknown',Protocol,xmlns=xmlns)
+        self.RegisterProtocol('default',Protocol,xmlns=xmlns)
 
-    def RegisterHandler(self,name,handler,typ='',ns='',chained=0, makefirst=0, system=0):
-        self.DEBUG('Registering handler %s for "%s" type->%s ns->%s'%(handler,name,typ,ns), 'info')
+    def RegisterProtocol(self,tag_name,Proto,xmlns=NS_CLIENT,order='info'):
+        self.DEBUG('Registering protocol "%s" as %s(%s)'%(tag_name,Proto,xmlns), order)
+        self.handlers[xmlns][tag_name]={type:Proto, 'default':[]}
+
+    def RegisterNamespaceHandler(self,xmlns,handler,typ='',ns='', makefirst=0, system=0):
+        self.RegisterHandler('default', handler, typ, ns, xmlns, makefirst, system)
+
+    def RegisterHandler(self,name,handler,typ='',ns='',xmlns=NS_CLIENT, makefirst=0, system=0):
+        self.DEBUG('Registering handler %s for "%s" type->%s ns->%s(%s)'%(handler,name,typ,ns,xmlns), 'info')
         if not typ and not ns: typ='default'
-        if not self.handlers.has_key(name): self.RegisterProtocol(name,Protocol,'warn')
-        if not self.handlers[name].has_key(typ+ns): self.handlers[name][typ+ns]=[]
-        if makefirst: self.handlers[name][typ+ns].insert({'chain':chained,'func':handler,'system':system})
-        else: self.handlers[name][typ+ns].append({'chain':chained,'func':handler,'system':system})
+        if not self.handlers.has_key(xmlns): self.RegisterNamespace(xmlns,'warn')
+        if not self.handlers[xmlns].has_key(name): self.RegisterProtocol(name,Protocol,xmlns,'warn')
+        if not self.handlers[xmlns][name].has_key(typ+ns): self.handlers[xmlns][name][typ+ns]=[]
+        if makefirst: self.handlers[xmlns][name][typ+ns].insert({'func':handler,'system':system})
+        else: self.handlers[xmlns][name][typ+ns].append({'func':handler,'system':system})
 
-    def RegisterHandlerOnce(self,name,handler,typ='',ns='',chained=0, makefirst=0, system=0):
-        self.RegisterHandler(name,handler,typ,ns,chained, makefirst, system)
+    def RegisterHandlerOnce(self,name,handler,typ='',ns='',xmlns=NS_CLIENT,makefirst=0, system=0):
+        self.RegisterHandler(name, handler, typ, ns, xmlns, makefirst, system)
 
-    def UnregisterHandler(self,name,handler,typ='',ns=''):
+    def UnregisterHandler(self,name,handler,typ='',ns='',xmlns=NS_CLIENT):
         if not typ and not ns: typ='default'
-        for pack in self.handlers[name][typ+ns]:
+        for pack in self.handlers[xmlns][name][typ+ns]:
             if handler==pack['func']: break
         else: pack=None
-        self.handlers[name][typ+ns].remove(pack)
+        try: self.handlers[xmlns][name][typ+ns].remove(pack)
+        except ValueError: pass
 
     def RegisterDefaultHandler(self,handler): self._defaultHandler=handler
     def RegisterEventHandler(self,handler): self._eventHandler=handler
 
     def returnStanzaHandler(self,conn,stanza):
-        if stanza.getName()<>'presence' and stanza.getType()<>'error':
+        if stanza.getType() in ['get','set']:
             conn.send(Error(stanza,ERR_FEATURE_NOT_IMPLEMENTED))
 
     def RegisterCycleHandler(self,handler):
@@ -110,52 +131,56 @@ class Dispatcher(PlugIn):
     def Event(self,realm,event,data):
         if self._eventHandler: self._eventHandler(realm,event,data)
 
-    def dispatch(self,stanza):
-        self.Stream._mini_dom=None
+    def dispatch(self,stanza,session=None):
+        if not session: session=self
+        session.Stream._mini_dom=None
         name=stanza.getName()
 
-        if name=='features': self.Stream.features=stanza
+        if name=='features': session.Stream.features=stanza
 
-        if not self.handlers.has_key(name):
+        xmlns=stanza.getNamespace()
+        if not self.handlers.has_key(xmlns):
+            self.DEBUG("Unknown namespace: " + xmlns,'warn')
+            xmlns='unknown'
+        if not self.handlers[xmlns].has_key(name):
             self.DEBUG("Unknown stanza: " + name,'warn')
             name='unknown'
         else:
             self.DEBUG("Got %s stanza"%name, 'ok')
 
-        stanza=self.handlers[name][type](node=stanza)
+        if stanza.__class__.__name__=='Node': stanza=self.handlers[xmlns][name][type](node=stanza)
 
         typ=stanza.getType()
         if not typ: typ=''
-        props=stanza.getProperties()
+        stanza.props=stanza.getProperties()
         ID=stanza.getID()
 
-        self.DEBUG("Dispatching %s stanza with type->%s props->%s id->%s"%(name,typ,props,ID),'ok')
+        session.DEBUG("Dispatching %s stanza with type->%s props->%s id->%s"%(name,typ,stanza.props,ID),'ok')
 
         list=['default']                                                     # we will use all handlers:
-        if self.handlers[name].has_key(typ): list.append(typ)                # from very common...
-        for prop in props:
-            if self.handlers[name].has_key(prop): list.append(prop)
-            if typ and self.handlers[name].has_key(typ+prop): list.append(typ+prop)  # ...to very particular
+        if self.handlers[xmlns][name].has_key(typ): list.append(typ)                # from very common...
+        for prop in stanza.props:
+            if self.handlers[xmlns][name].has_key(prop): list.append(prop)
+            if typ and self.handlers[xmlns][name].has_key(typ+prop): list.append(typ+prop)  # ...to very particular
 
-        chain=[]
+        chain=self.handlers[xmlns]['default']['default']
         for key in list:
-            if key: chain += self.handlers[name][key]
+            if key: chain = chain + self.handlers[xmlns][name][key]
 
         output=''
-        if self._expected.has_key(ID):
-            self._expected[ID]=stanza
+        if session._expected.has_key(ID):
+            session._expected[ID]=stanza
             user=0
-            self.DEBUG("Expected stanza arrived!",'ok')
+            session.DEBUG("Expected stanza arrived!",'ok')
         else: user=1
         for handler in chain:
             if user or handler['system']:
                 try:
-                    if handler['chain']: output=handler['func'](self,stanza,output)
-                    else: handler['func'](self,stanza)
+                    handler['func'](session,stanza)
                 except Exception, typ:
                     if typ.__class__.__name__<>'NodeProcessed': raise
                     user=0
-        if user and self._defaultHandler: self._defaultHandler(self,stanza)
+        if user and self._defaultHandler: self._defaultHandler(session,stanza)
 
     def WaitForResponse(self, ID, timeout=DefaultTimeout):
         self._expected[ID]=None

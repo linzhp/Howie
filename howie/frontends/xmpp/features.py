@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: features.py,v 1.3 2004/10/12 17:32:01 cort Exp $
+# $Id: features.py,v 1.4 2004/10/31 12:09:29 cort Exp $
 
 from protocol import *
 
@@ -23,8 +23,8 @@ def _discover(disp,ns,jid,node=None,fb2b=0,fb2a=1):
     iq=Iq(to=jid,typ='get',queryNS=ns)
     if node: iq.setAttr('node',node)
     rep=disp.SendAndWaitForResponse(iq)
-    if fb2b and isErrorNode(rep): rep=disp.SendAndWaitForResponse(Iq(to=jid,typ='get',queryNS=NS_BROWSE))   # Fallback to browse
-    if fb2a and isErrorNode(rep): rep=disp.SendAndWaitForResponse(Iq(to=jid,typ='get',queryNS=NS_AGENTS))   # Fallback to agents
+    if fb2b and not isResultNode(rep): rep=disp.SendAndWaitForResponse(Iq(to=jid,typ='get',queryNS=NS_BROWSE))   # Fallback to browse
+    if fb2a and not isResultNode(rep): rep=disp.SendAndWaitForResponse(Iq(to=jid,typ='get',queryNS=NS_AGENTS))   # Fallback to agents
     if isResultNode(rep): return rep.getQueryPayload()
     return []
 
@@ -67,10 +67,10 @@ def getRegInfo(disp,host,info={}):
     if not isResultNode(resp): return
     df=resp.getTag('query',namespace=NS_REGISTER).getTag('x',namespace=NS_DATA)
     if df: return DataForm(node=df)
-    df=DataForm({'type':'form'})
+    df=DataForm(typ='form')
     for i in resp.getQueryPayload():
-        if i.getName()=='instructions': df.addChild(node=i)
-        else: df.addChild(node=Node('field',{'var':i.getName(),'type':'text-single'},payload=[Node('value',payload=[i.getData()])]))
+        if i.getName()=='instructions': df.addInstructions(i.getData())
+        else: df.setField(i.getName()).setValue(i.getData())
     return df
 
 def register(disp,host,info):
