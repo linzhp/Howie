@@ -35,6 +35,9 @@ he should work on any system that meets the following requirements:
  - 64 MB available RAM (depending on the AIML set you're using)
  - Dedicated Internet connection
 
+NOTE: There is a known problem with Howie running under Windows 95, having
+to do with Python's os.popen() function not working on that platform.
+
 INSTALLATION (Windows binary distribution)
 ------------------------------------------
 1. Run the installer (you've done that).
