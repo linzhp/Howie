@@ -1,3 +1,6 @@
+1/7/2004:
+ - Upgraded AIML interpreter to PyAIML version 0.7.
+ - Upgraded msnp package to v0.4.0 (the frontend still doesn't work, though).
  - Added XMLRPC front-end.
 
 12/17/2003:
