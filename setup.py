@@ -11,12 +11,6 @@ setup(name="Howie",
 	scripts=["runme.py"],
 	data_files=[
 		("standard", glob.glob("standard\\*.aiml")),
-		(".", ("j-alice.ini", "std-startup.xml", "README.txt", "substitutions.xml", "howie.ini")),
-
-		# This is a HACK.  Currently, the code in core.py requires that these
-		# actual source files exist in order for the frontends to work.
-		("howie", glob.glob("howie\\*.py")),
-		("howie\\frontends", glob.glob("howie\\frontends\\*.py")),
-		("howie\\backends", glob.glob("howie\\backends\\*.py")),		  
+		(".", ("j-alice.ini", "std-startup.xml", "README.txt", "substitutions.xml", "howie.ini")),	  
 	],
 )

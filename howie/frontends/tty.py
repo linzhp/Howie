@@ -4,6 +4,10 @@ import time
 
 import frontend
 
+# This string needs to be defined for each front end.  It should
+# contain the name of the front-end class defined in this module.
+frontEndClass = "FrontEndTTY"
+
 # List the default values for the INI file.  This should be a dictionary
 # with keys of the form "<fe>.<entry>", where <fe> is the name of the
 # frontend (e.g. "aim", "msn"), and entry is the name of the configuration

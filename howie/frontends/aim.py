@@ -6,6 +6,10 @@ import toc
 import howie.configFile
 import frontend
 
+# This string needs to be defined for each front end.  It should
+# contain the name of the front-end class defined in this module.
+frontEndClass = "FrontEndAIM"
+
 # default config file values for this module
 configDefaults = {
 	"aim.active":			"no",

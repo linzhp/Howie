@@ -9,9 +9,7 @@ import threading
 import configFile
 import frontends
 from frontends import *
-import frontends.frontend
-from backends import jalice
-from backends import googlism
+from backends import *
 
 class ActiveFrontEnd:
 	def __init__(self, inst, thread):
@@ -62,25 +60,19 @@ def init():
 				if config['cla.verboseMode'] == 'yes':
 					print "Skipping inactive frontend: %s" % fe
 				continue
-			
-			# Extract defintions of all classes defined in this module.
-			# We could alternately use the builtin function issubclass(C,B)
-			# on all objects defined in the module, but this seems cleaner
-			# (if perhaps slower).
-			# NOTE: This appears to cause problems with py2exe if the actual
-			# source files aren't present to be parsed.  I'm working on
-			# a workaround -- in the meantime, the frontend sources must be
-			# included.
-			classes = pyclbr.readmodule("howie.frontends.%s" % fe)
-			
-			
-			# Look for classes which are descended from IFrontEnd
-			for cls, clsInfo in classes.items():
+
+			# Attempt to extract the name of the front-end class defined in this module.
+			# If no such class is defined, or if the class is not a subclass of IFrontEnd,
+			# skip this module.
+			try:
+				cls = eval("frontends.%s.frontEndClass" % fe)
 				if issubclass(eval("frontends.%s.%s" % (fe, cls)), frontends.frontend.IFrontEnd):
-					# Create an instance of this class in the __frontends dictionary.
+					# Create an instance of this class in the __frontends dictionary
 					__addFrontEnd(fe, cls)
 					break
-
+			except:
+				# no class defined in this file.
+				continue
 
 def submit(input, user):
 	"Submits a statement to the back-end. Returns the response to the statement."
