@@ -12,7 +12,7 @@
 	Var MY_PRODUCT
 	Var MY_VERSION
 	!define MY_PRODUCT "Howie"
-	!define MY_VERSION "20040107"
+	!define MY_VERSION "20040109"
 	
 	# General
 	Name "${MY_PRODUCT}"
@@ -65,6 +65,7 @@
 	# Description
 	LangString DESC_SecCopyMain ${LANG_ENGLISH} "Installs ${MY_PRODUCT} files to the application folder."
 	LangString DESC_SecCopyAddOns ${LANG_ENGLISH} "Installs some optional add-on modules to extend {MY_PRODUCT}'s capabilities."
+    LangString DESC_SecCopyAcronym ${LANG_ENGLISH} "Handles 'what does X stand for' questions."
 	LangString DESC_SecCopyGooglism ${LANG_ENGLISH} "Handles 'who/what/where/when is X' questions."
 	LangString DESC_SecCopyRhyme ${LANG_ENGLISH} "Handles 'what rhymes with X' questions."
 	
@@ -142,6 +143,17 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 SectionEnd
 
 SubSection "Add-ons" SecCopyAddOns
+    Section "Acronyms" SecCopyAcronym
+        # Install acronym
+        DetailPrint "Installing Acronym module..."
+        SetDetailsPrint textonly
+        SetOutPath $INSTDIR\scripts
+        File scripts\acronym.py
+        SetOutPath $INSTDIR\standard
+        File standard\howie-acronym.aiml
+        SetDetailsPrint both    
+    SectionEnd
+
     Section "Googlisms" SecCopyGooglism
         # Install googlism
         DetailPrint "Installing Googlism module..."
