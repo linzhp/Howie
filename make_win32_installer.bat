@@ -1,3 +1,4 @@
+@echo off
 REM Clear the runway!
 rm -rf build
 rm -rf dist
