@@ -94,6 +94,6 @@ class OscarListener(oscar.BOSConnection, frontend.IFrontEnd):
     def chatMemberLeft(self, chat, member):
         #print member.name,'left',chat.name
         #print 'current members',map(lambda x:x.name,chat.members)
-        if chat.name!="%s Chat"%SN and len(chat.members)==1:
+        if len(chat.members)==1:
             #print 'leaving', chat.name
             chat.leaveChat()
