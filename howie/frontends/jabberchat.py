@@ -98,7 +98,12 @@ class FrontEndJabber(frontend.IFrontEnd):
         """Called when a message is recieved"""
         if not msg.getBody(): # Dont process blank messages
             return
-        source = str(msg.getFrom())
+        # Jabber IDs contain a slash between the server name and the
+        # resource name.  This presents a problem, since Howie uses
+        # the session name as the filename for the log/session files.
+        # So the session name for Jabber sessions is just
+        # "username@server".
+        source = str(msg.getFrom()).split("/")[0]
         # message body is Unicode, and Howie currently doesn't like
         # Unicode.  Convert it to ASCII with str() before submitting.
         response = self.submit(str(msg.getBody()), source+"@JABBER")
