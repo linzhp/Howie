@@ -1,3 +1,5 @@
+ - Added XMLRPC front-end.
+
 12/17/2003:
  - New pure-Python AIML interpreter (out with J-Alice, in with PyAIML,
    version 0.5).

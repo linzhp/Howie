@@ -1,1 +1,1 @@
-__all__ = ["aim", "tty"]
+__all__ = ["aim", "tty", "xmlrpc"]

@@ -31,7 +31,7 @@ def _addFrontEnd(name, cls):
 	# Instantiate the frontend object
 	feInst = eval("%s.%s()" % (name, cls))
 	
-	# Create a thread to run this frontend				
+	# Create a thread to run this frontend
 	feThread = threading.Thread(name=name, target=feInst.go)
 	feThread.start()
 	_frontends[name] = ActiveFrontEnd(feInst, feThread)
@@ -77,7 +77,6 @@ def init():
 				if issubclass(eval("frontends.%s.%s" % (fe, cls)), frontends.frontend.IFrontEnd):
 					# Create an instance of this class in the _frontends dictionary
 					_addFrontEnd(fe, cls)
-					break
 			except:
 				# no class defined in this file.
 				continue
