@@ -20,9 +20,9 @@ synonyms for any word in the dictionary, query your address book, and even
 perform a few simple remote system-administration tasks!
 
 Howie is Connected.
-You can communicate with Howie in a number of different ways: AIM, IRC, MSN
+You can communicate with Howie in a number of different ways: AIM, ICQ, IRC, MSN
 Messenger, Jabber Chat, XML-RPC, or locally on the command-line. Future
-versions will include interfaces for HTTP, ICQ, Zephyr, and more!
+versions will include interfaces for HTTP, Zephyr, and more!
 Howie's knowledge base is made up of a wide variety of Internet resources.
 If you find something that he can't do, it's usually pretty
 straightforward to teach him!
@@ -34,6 +34,9 @@ he should work on any system that meets the following requirements:
  - Python 2.2.x or greater.
  - 64 MB available RAM (depending on the AIML set you're using)
  - Dedicated Internet connection
+ - The Twisted framework (http://twistedmatrix.com/products/twisted).
+   You must have Twisted installed in order to run Howie from the source.
+   NOTE: The Windows binary distribution already includes Twisted.
 
 NOTE: There is a known problem with Howie running under Windows 95, having
 to do with Python's os.popen() function not working on that platform.
@@ -86,7 +89,8 @@ Foundation (including information on AIML, the Artificial Intelligence
 Markup Language used to program Howie's responses), visit the A.L.I.C.E.
 homepage at http://www.alicebot.org/. 
 
-Howie's AIM front-end is provided by Py-TOC (http://www.jamwt.com/Py-TOC/).
+Howie's AIM and ICQ front-ends are provided by Twisted
+(http://twistedmatrix.com/products/twisted).
 
 Howie's IRC front-end was written by Jamie Turner (author of Py-TOC), and is
 built on top of Joel Rosdahl's Python IRC library
