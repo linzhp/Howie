@@ -12,6 +12,8 @@
    logging in.
  - Fixed bug in msnp's __process_add() function.
  - Fixed bug in MSN frontend's friend-adding code.
+ - Wrapped call to register_introspection_functions() to allow it to run
+   without crashing older versions of Python.
 
 0.5.0:
  - Arbitrary switch from date-based snapshots to "real" version numbers

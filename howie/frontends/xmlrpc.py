@@ -25,7 +25,11 @@ The 'user' string contains an ID the user making the request.
 It is used internally as a unique session identifier for the user's conversation.
 """
         self._server.register_function(respond, "respond") 
-        self._server.register_introspection_functions()
+        # This function is only available in fairly recent Python versions.
+        try:
+            self._server.register_introspection_functions()
+        except:
+            pass
         
     def go(self):
         self._server.serve_forever()
