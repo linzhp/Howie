@@ -1,9 +1,9 @@
 <aiml version="1.0">
 
+<category>
 <pattern>BOOTSTRAP</pattern>
 <template>
-Version Info: <version/><br/>
-Thanks for using J-ALICE!
+Interpreter Version Info: <version/>
 <think>
 <!-- this srai's to a category to load the main AIML content -->
 <!-- you can create another category, and srai to that to learn

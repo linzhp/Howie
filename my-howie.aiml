@@ -5,7 +5,6 @@
 <category>
 <pattern>TEST SYSTEM TAG *</pattern>
 <template>Howie says: <system mode="sync">scripts\echo.py <star/></system>, a'ite?</template>
-</secure>
 </category>
 
 </aiml>
