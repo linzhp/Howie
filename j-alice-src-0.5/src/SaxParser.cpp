@@ -13,16 +13,15 @@ void SaxParser::parse(istream &in) {
 	vector<char> vBuffer;
 	vBuffer.reserve(10000);
 
-	istreambuf_iterator<char> itr(in);
-	istreambuf_iterator<char> eos;
+	istream &istr = in;
 	
-	for (int i = 0; itr != eos; ++itr, ++i) {
-		buf = *itr;
+	for (int i = 0; !istr.eof(); ++i) {
+		buf = istr.get();
 		
 		switch (buf) {
 		case '\0':
 			//	I don't know why, but...
-			itr = eos;
+			break ;//itr = eos;
 			continue;
 		case '\n':
 		case '\r':
@@ -46,14 +45,14 @@ void SaxParser::parse(istream &in) {
 		case '-':
 			if (vBuffer.size() == 4 && string(vBuffer.begin(), vBuffer.end()) == "<!--") {
 				//	Then skip comment
-				++itr; ++i;
-				while (itr != eos) {
-					buf = *itr;
+				(void)istr.get(); ++i;
+				while (!istr.eof()) {
+					buf = istr.peek();
 					vBuffer.push_back(buf);
 					if (vBuffer.size() >= 3 && string(vBuffer.end() - 3, vBuffer.end()) == "-->") {
 						break;
 					}
-					++itr;
+					(void)istr.get();
 					++i;
 				}
 				string str(vBuffer.begin(), vBuffer.end());
@@ -68,13 +67,13 @@ void SaxParser::parse(istream &in) {
 			||	(vBuffer.size() == 9 && string(vBuffer.begin(), vBuffer.end()) == "<!DOCTYPE")
 			) {
 				//	Then skip doctype or xml declaration
-				++itr; ++i;
-				while (itr != eos) {
-					buf = *itr;
+				(void)istr.get(); ++i;
+				while (!istr.eof()) {
+					buf = istr.peek();
 					if (buf == '>') {
 						break;
 					}
-					++itr;
+					(void)istr.get();
 					++i;
 				}
 				vBuffer.clear();
@@ -86,16 +85,16 @@ void SaxParser::parse(istream &in) {
 			if (vBuffer.size() == 9 && string(vBuffer.begin(), vBuffer.end()) == "<![CDATA[") {
 				//	Then build up cdata section
 				vBuffer.clear();
-				++itr; ++i;
-				while (itr != eos) {
-					buf = *itr;
+				(void)istr.get(); ++i;
+				while (!istr.eof()) {
+					buf = istr.peek();
 					vBuffer.push_back(buf);
 					if (buf == '>' && string(vBuffer.end() - 3, vBuffer.end()) == "]]>") {
 						string s(vBuffer.begin(), vBuffer.end() - 3);
 						listener->elementCData(s, i);
 						break;
 					}
-					++itr;
+					(void)istr.get();
 					++i;
 				}
 				vBuffer.clear();

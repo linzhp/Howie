@@ -2,17 +2,20 @@
 
 AimlWriter.o: AimlWriter.h Element.h Pointer.h
 Element.o: Element.h Pointer.h Utils.h /usr/include/string.h
-Element.o: /usr/include/sys/cdefs.h /usr/include/sys/_types.h
-Element.o: /usr/include/machine/_types.h /usr/include/strings.h
+Element.o: /usr/include/iso/string_iso.h /usr/include/sys/feature_tests.h
+Element.o: /usr/include/sys/isa_defs.h
 FlashResponder.o: FlashResponder.h Responder.h Element.h Pointer.h Match.h
 HTTPProcessor.o: HTTPProcessor.h AimlProcessor.h Element.h Pointer.h Match.h
 HTTPProcessor.o: Responder.h ServerSocket.h Socket.h SocketHandler.h
-HTTPProcessor.o: /usr/include/stdlib.h /usr/include/sys/cdefs.h
-HTTPProcessor.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-HTTPProcessor.o: /usr/include/unistd.h /usr/include/sys/types.h
-HTTPProcessor.o: /usr/include/machine/endian.h /usr/include/sys/select.h
-HTTPProcessor.o: /usr/include/sys/_sigset.h /usr/include/sys/_timeval.h
-HTTPProcessor.o: /usr/include/sys/timespec.h /usr/include/sys/unistd.h
+HTTPProcessor.o: /usr/include/stdio.h /usr/include/iso/stdio_iso.h
+HTTPProcessor.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+HTTPProcessor.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+HTTPProcessor.o: /usr/include/stdio_impl.h /usr/include/stdlib.h
+HTTPProcessor.o: /usr/include/iso/stdlib_iso.h /usr/include/unistd.h
+HTTPProcessor.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+HTTPProcessor.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+HTTPProcessor.o: /usr/include/sys/time.h /usr/include/time.h
+HTTPProcessor.o: /usr/include/iso/time_iso.h /usr/include/sys/unistd.h
 HTTPProcessor.o: Kernel.h PredicateEngine.h TokenProxyListener.h Logger.h
 HTTPProcessor.o: Config.h Utils.h StringTokenizer.h Stream.h
 Handler.o: Handler.h AimlProcessor.h Element.h Pointer.h Match.h Responder.h
@@ -23,14 +26,19 @@ Handler.o: SetProcessor.h NameProcessor.h SraiProcessor.h StarProcessor.h
 Handler.o: ThatProcessor.h InputProcessor.h LearnProcessor.h Substituter.h
 Handler.o: Parser.h SaxParser.h Nodemaster.h Template.h ThinkProcessor.h
 Handler.o: FormalProcessor.h StringTokenizer.h PersonProcessor.h
-Handler.o: RandomProcessor.h /usr/include/time.h /usr/include/sys/cdefs.h
-Handler.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-Handler.o: /usr/include/sys/timespec.h /usr/include/stdlib.h
+Handler.o: RandomProcessor.h /usr/include/time.h
+Handler.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Handler.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+Handler.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+Handler.o: /usr/include/sys/time.h /usr/include/iso/time_iso.h
+Handler.o: /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h
 Handler.o: SentenceProcessor.h ThatstarProcessor.h ConditionProcessor.h
 Handler.o: LowercaseProcessor.h NormalizeProcessor.h TopicstarProcessor.h
 Handler.o: UppercaseProcessor.h HTTPProcessor.h SecureProcessor.h
 Handler.o: XmlSocketResponder.h SubstituteProcessor.h SystemProcessor.h
-Handler.o: /usr/include/stdio.h VersionProcessor.h ImpExpProcessor.h
+Handler.o: /usr/include/stdio.h /usr/include/iso/stdio_iso.h
+Handler.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+Handler.o: /usr/include/stdio_impl.h VersionProcessor.h ImpExpProcessor.h
 IrcResponder.o: IrcResponder.h Responder.h Element.h Pointer.h Match.h
 IrcResponder.o: Socket.h ServerSocket.h Config.h Kernel.h PredicateEngine.h
 IrcResponder.o: StringTokenizer.h TokenProxyListener.h Utils.h
@@ -40,14 +48,18 @@ Kernel.o: Parser.h SaxParser.h Handler.h AimlProcessor.h Responder.h
 Kernel.o: Nodemaster.h Template.h Substituter.h StringTokenizer.h
 Kernel.o: TemplateProcessor.h PreParser.h AimlWriter.h NodeWalker.h Stream.h
 Kernel.o: Config.h TimeKeeper.h
-Logger.o: Logger.h Utils.h /usr/include/time.h /usr/include/sys/cdefs.h
-Logger.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-Logger.o: /usr/include/sys/timespec.h
+Logger.o: Logger.h Utils.h /usr/include/time.h
+Logger.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Logger.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+Logger.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+Logger.o: /usr/include/sys/time.h /usr/include/iso/time_iso.h
 Main.o: Kernel.h Element.h Pointer.h PredicateEngine.h Utils.h Config.h
 Main.o: SocketHandler.h IrcResponder.h Responder.h Match.h Socket.h
 Main.o: ServerSocket.h HTTPProcessor.h AimlProcessor.h Stream.h Main.h
-Main.o: /usr/include/stdio.h /usr/include/sys/cdefs.h
-Main.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
+Main.o: /usr/include/stdio.h /usr/include/iso/stdio_iso.h
+Main.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Main.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+Main.o: /usr/include/stdio_impl.h
 Match.o: Match.h Element.h Pointer.h Nodemaster.h Template.h
 NodeWalker.o: NodeWalker.h Nodemaster.h Template.h Element.h Pointer.h
 NodeWalker.o: AimlWriter.h Utils.h
@@ -58,29 +70,42 @@ PreParser.o: PredicateEngine.h Template.h Nodemaster.h Utils.h
 PredicateEngine.o: PredicateEngine.h Utils.h
 SaxParser.o: SaxParser.h Utils.h StringTokenizer.h
 ServerSocket.o: ServerSocket.h Socket.h /usr/include/stdio.h
-ServerSocket.o: /usr/include/sys/cdefs.h /usr/include/sys/_types.h
-ServerSocket.o: /usr/include/machine/_types.h /usr/include/fcntl.h
-ServerSocket.o: SocketHandler.h Compat.h
-Socket.o: Socket.h Logger.h /usr/include/stdio.h /usr/include/sys/cdefs.h
-Socket.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-Socket.o: /usr/include/errno.h SocketHandler.h Compat.h Utils.h Stream.h
+ServerSocket.o: /usr/include/iso/stdio_iso.h /usr/include/sys/feature_tests.h
+ServerSocket.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+ServerSocket.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+ServerSocket.o: /usr/include/fcntl.h /usr/include/sys/types.h
+ServerSocket.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+ServerSocket.o: /usr/include/sys/select.h /usr/include/sys/time.h
+ServerSocket.o: /usr/include/time.h /usr/include/iso/time_iso.h
+ServerSocket.o: /usr/include/sys/fcntl.h SocketHandler.h Compat.h
+Socket.o: Socket.h Logger.h /usr/include/stdio.h /usr/include/iso/stdio_iso.h
+Socket.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Socket.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+Socket.o: /usr/include/stdio_impl.h /usr/include/errno.h
+Socket.o: /usr/include/sys/errno.h SocketHandler.h Compat.h Utils.h Stream.h
 SocketHandler.o: SocketHandler.h /usr/include/stdio.h
-SocketHandler.o: /usr/include/sys/cdefs.h /usr/include/sys/_types.h
-SocketHandler.o: /usr/include/machine/_types.h Socket.h TimeKeeper.h
+SocketHandler.o: /usr/include/iso/stdio_iso.h
+SocketHandler.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+SocketHandler.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+SocketHandler.o: /usr/include/stdio_impl.h Socket.h TimeKeeper.h
 Stream.o: Stream.h
 StringTokenizer.o: StringTokenizer.h
 Substituter.o: Substituter.h Utils.h StringTokenizer.h
 Template.o: Template.h Kernel.h Element.h Pointer.h PredicateEngine.h
 TemplateProcessor.o: TemplateProcessor.h AimlProcessor.h Element.h Pointer.h
 TemplateProcessor.o: Match.h Responder.h Handler.h StringTokenizer.h
-TimeKeeper.o: TimeKeeper.h /usr/include/time.h /usr/include/sys/cdefs.h
-TimeKeeper.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-TimeKeeper.o: /usr/include/sys/timespec.h
+TimeKeeper.o: TimeKeeper.h /usr/include/time.h
+TimeKeeper.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+TimeKeeper.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+TimeKeeper.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+TimeKeeper.o: /usr/include/sys/time.h /usr/include/iso/time_iso.h
 TokenProxyListener.o: TokenProxyListener.h Socket.h
-Utils.o: Utils.h /usr/include/ctype.h /usr/include/sys/cdefs.h
-Utils.o: /usr/include/sys/_types.h /usr/include/machine/_types.h
-Utils.o: /usr/include/runetype.h /usr/include/time.h
-Utils.o: /usr/include/sys/timespec.h
+Utils.o: Utils.h /usr/include/ctype.h /usr/include/iso/ctype_iso.h
+Utils.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Utils.o: /usr/include/time.h /usr/include/sys/types.h
+Utils.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+Utils.o: /usr/include/sys/select.h /usr/include/sys/time.h
+Utils.o: /usr/include/iso/time_iso.h
 XmlSocketResponder.o: XmlSocketResponder.h Responder.h Element.h Pointer.h
 XmlSocketResponder.o: Match.h AimlProcessor.h ServerSocket.h Socket.h
 XmlSocketResponder.o: Parser.h SaxParser.h Kernel.h PredicateEngine.h

@@ -1,6 +1,4 @@
-PYTHON_INCDIR = /usr/local/include/python2.2
-PYTHON_LIBDIR = /usr/local/lib/python2.2/config
-PYTHON_LIB    = python2.2
+PYTHON_INCDIR := $(shell python -c "import sys; print sys.prefix")/include/python2.3
 
 JALICE_SRC = AimlWriter.cpp Element.cpp FlashResponder.cpp HTTPProcessor.cpp \
 	Handler.cpp IrcResponder.cpp Kernel.cpp Logger.cpp Main.cpp Match.cpp \
@@ -37,10 +35,10 @@ OUTPUT = _jalice.so
 
 # Set up C++ compiler options
 CC = g++
-CCFLAGS = -fPIC -DJALICE_BUILDING_DLL
-INCDIR = -I$(PYTHON_INCDIR) -I/usr/include/g++/backward/
-LIBDIR = -L$(PYTHON_LIBDIR)
-LIBS = -l$(PYTHON_LIB)
+CCFLAGS = -fpic -DJALICE_BUILDING_DLL
+INCDIR = -I$(PYTHON_INCDIR)
+LIBDIR = 
+LIBS =
 
 # Set up linker options
 LD = ld
@@ -64,7 +62,7 @@ SWIGFLAGS = -c++ -python
 all: $(OUTPUT)
 
 $(OUTPUT): $(OBJ)
-	$(LD) $(LDFLAGS) -o $(OUTPUT) $(OBJ) $(LIBDIR) $(LIBS)
+	g++ -shared -o $(OUTPUT) $(OBJ)
 
 $(SWIG_OBJ): $(SWIG_SRC)
 

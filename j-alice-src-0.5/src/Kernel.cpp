@@ -5,6 +5,7 @@
  */
 #include "Kernel.h"
 
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -184,7 +185,7 @@ void prettyPrintHeader(const string &filename, int size, int totalSize, long tim
 Nodemaster *Kernel::root = new Nodemaster();
 
 Kernel::Kernel() {
-	new Substituter();
+  new Substituter();
 	Handler::init();
 	Kernel::loadSubstitutions();
 	if (!Kernel::load("std-startup.xml")) {
