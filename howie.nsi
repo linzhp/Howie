@@ -12,7 +12,7 @@
 	Var MY_PRODUCT
 	Var MY_VERSION
 	!define MY_PRODUCT "Howie"
-	!define MY_VERSION "20031201"
+	!define MY_VERSION "20031217"
 	
 	# General
 	Name "${MY_PRODUCT}"
@@ -64,6 +64,9 @@
 
 	# Description
 	LangString DESC_SecCopyMain ${LANG_ENGLISH} "Installs ${MY_PRODUCT} files to the application folder."
+	LangString DESC_SecCopyAddOns ${LANG_ENGLISH} "Installs some optional add-on modules to extend {MY_PRODUCT}'s capabilities."
+	LangString DESC_SecCopyGooglism ${LANG_ENGLISH} "Handles 'who/what/where/when is X' questions."
+	LangString DESC_SecCopyRhyme ${LANG_ENGLISH} "Handles 'what rhymes with X' questions."
 	
 #--------------------------------
 #Reserve Files
@@ -138,6 +141,31 @@ Section "!${MY_PRODUCT} (required)" SecCopyMain
 	!insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
+SubSection "Add-ons" SecCopyAddOns
+    Section "Googlisms" SecCopyGooglism
+        # Install googlism
+        DetailPrint "Installing Googlism module..."
+        SetDetailsPrint textonly
+        SetOutPath $INSTDIR\scripts
+        File scripts\googlism.py
+        SetOutPath $INSTDIR\standard
+        File standard\howie-googlism.aiml
+        SetDetailsPrint both    
+    SectionEnd
+	
+	# Install rhyme
+	Section "Rhymes" SecCopyRhyme
+        DetailPrint "Installing Rhymes module..."
+        SetDetailsPrint textonly
+        SetOutPath $INSTDIR\scripts
+        File scripts\rhyme.py
+        File scripts\*.db
+        SetOutPath $INSTDIR\standard
+        File standard\howie-rhyme.aiml
+        SetDetailsPrint both
+    SectionEnd
+SubSectionEnd
+
 #--------------------------------
 #Installer Functions
 
@@ -168,6 +196,9 @@ FunctionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyMain} $(DESC_SecCopyMain)
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyAddOns} $(DESC_SecCopyAddOns)
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyGooglism} $(DESC_SecCopyGooglism)
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecCopyRhyme} $(DESC_SecCopyRhyme)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
  
 #--------------------------------
