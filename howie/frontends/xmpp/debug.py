@@ -46,7 +46,6 @@ from string import join
 import types
 
 
-debug_flags = []
 
 color_none         = chr(27) + "[0m"
 color_black        = chr(27) + "[30m"
@@ -97,8 +96,6 @@ DBG_MULTI = [ DBG_INIT, DBG_CONNECTION ]
   To speed code up, typically for product releases or such
   use this class instead if you globaly want to disable debugging
 """
-DBG_INIT = 'init'        ; debug_flags.append( DBG_INIT )
-DBG_ALWAYS = 'always'    ; debug_flags.append( DBG_ALWAYS )
 
 
 class NoDebug:
@@ -157,19 +154,10 @@ class Debug:
                   #
                   # If you dont want the welcome message, set to 0
                   # default is to show welcome if any flags are active
-                  welcome = -1,
-                  #
-                  # Non plain-ascii encodings can benefit from it
-                  encoding = None
+                  welcome = -1
                   ):
-
-        if type(active_flags) not in [type([]), type(())]:
-            print  '***' 
-            print  '*** Invalid or oldformat debug param given: %s' % active_flags
-            print  '*** please correct your param, should be of [] type!'
-            print  '*** Due to this, full debuging is enabled'
-            active_flags=[DBG_ALWAYS]
-
+        
+        self.debug_flags = []
         if welcome == -1:
             if active_flags and len(active_flags):
                 welcome = 1
@@ -197,7 +185,6 @@ class Debug:
         self.time_stamp = time_stamp
         self.flag_show = None # must be initialised after possible welcome
         self.validate_flags = validate_flags
-        self.encoding = encoding
 
         self.active_set( active_flags )
         if welcome:
@@ -271,9 +258,6 @@ class Debug:
                 # dont print "None", just show the separator
                 output = '%s %s' % ( output, self.flag_show )
 
-        if type(msg)==type(u'') and self.encoding:
-            msg=msg.encode(self.encoding, 'replace')
-
         output = '%s%s%s' % ( output, msg, suf )
         if lf:
             # strip/add lf if needed
@@ -303,7 +287,7 @@ class Debug:
         # try to abort early to quicken code
         if not self.active:
             return 0
-        if not flag or flag in self.active or DBG_ALWAYS in  self.active:
+        if not flag or flag in self.active:
             return 1
         else:
             # check for multi flag type:
@@ -324,10 +308,9 @@ class Debug:
         elif type( active_flags ) in ( types.TupleType, types.ListType ):
             flags = self._as_one_list( active_flags )
             for t in flags:
-                if t not in debug_flags:
+                if t not in self.debug_flags:
                     print 'Invalid debugflag given', t
-                else:
-                    ok_flags.append( t )
+                ok_flags.append( t )
                 
             self.active = ok_flags
             r = 1
@@ -340,7 +323,7 @@ class Debug:
                 self.show( '*** Invalid debug param given: %s' % active_flags )
                 self.show( '*** please correct your param!' )
                 self.show( '*** due to this, full debuging is enabled' )
-                self.active = debug_flags
+                self.active = self.debug_flags
             
             for f in flags:
                 s = f.strip()
@@ -389,7 +372,7 @@ class Debug:
         'verify that flag is defined.'
         if flags:
             for f in self._as_one_list( flags ):
-                if not f in debug_flags:
+                if not f in self.debug_flags:
                     msg2 = '%s' % f
                     raise 'Invalid debugflag given', msg2
 
@@ -398,11 +381,26 @@ class Debug:
         if multiple instances of Debug is used in same app, 
         some flags might be created multiple time, filter out dupes
         """
-        global debug_flags
-        
         unique_flags = []
-        for f in debug_flags:
+        for f in self.debug_flags:
             if f not in unique_flags:
                 unique_flags.append(f)
-        debug_flags = unique_flags
+        self.debug_flags = unique_flags
 
+    colors={}
+    def Show(self, flag, msg, prefix=''):
+        msg=msg.replace('\r','\\r').replace('\n','\\n')
+        if self.colors.has_key(prefix): msg=self.colors[prefix]+msg+color_none
+        else: msg=color_none+msg
+        if self.colors.has_key(flag): prefixcolor=self.colors[flag]
+        else: prefixcolor=color_none
+        
+        prefix= self.prefix+prefixcolor+(flag+' '*12)[:12]+' '+(prefix+' '*6)[:6]
+        self.show(msg, flag, prefix)
+
+    def is_active( self, flag ):
+        if not self.active: return 0
+        if not flag or flag in self.active and DBG_ALWAYS not in self.active or flag not in self.active and DBG_ALWAYS in self.active : return 1
+        return 0
+
+DBG_ALWAYS='always'

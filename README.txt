@@ -95,8 +95,7 @@ built on top of Joel Rosdahl's Python IRC library
 Howie's MSN front-end is provided by msnp, a Python MSN module by Manish
 Jethani (http://msnp.sourceforge.net/). 
 
-Howie's Jabber front-end is provided by jabber.py, a Python Jabber module by
-Matthew Allum (http://jabberpy.sourceforge.net).
+Howie's Jabber front-end is provided by xmpppy (http://xmpppy.sourceforge.net).
 
 Howie is named after Howie Day (http://www.howieday.com/), for no particular
 reason.  If it weren't for Amy Kalson, he would be named something truly boring

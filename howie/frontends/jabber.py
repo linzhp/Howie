@@ -2,7 +2,7 @@ import getpass
 import random
 import time
 
-import jabber
+import xmpp
 
 import howie.configFile
 import frontend
@@ -20,12 +20,12 @@ frontEndClass = "FrontEndJabber"
 # are "yes" and "no", which indicates whether that frontend should
 # be activated.
 configDefaults = {
-    "jabberchat.active":        "no",
-    "jabberchat.username":      "",
-    "jabberchat.password":      "",
-    "jabberchat.server":        "jabber.org",
-    "jabberchat.resource":      "default",
-    "jabberchat.nickname":      "Howie",
+    "jabber.active":        "no",
+    "jabber.username":      "",
+    "jabber.password":      "",
+    "jabber.server":        "jabber.org",
+    "jabber.resource":      "default",
+    "jabber.nickname":      "Howie",
 }
 
 class FrontEndJabber(frontend.IFrontEnd):
@@ -35,24 +35,24 @@ class FrontEndJabber(frontend.IFrontEnd):
         # them.
         config = howie.configFile.get()
         try:
-            username = config['jabberchat.username']
+            username = config['jabber.username']
             if username == "": raise KeyError
         except KeyError: username = raw_input("Jabber Username: ")
         try:
-            password = config['jabberchat.password']
+            password = config['jabber.password']
             if password == "": raise KeyError
         except KeyError: password = getpass.getpass("Jabber password for %s: " % username)
         try:
-            server = config['jabberchat.server']
+            server = config['jabber.server']
             if server == "": raise KeyError
         except KeyError: server = raw_input("Jabber Server: ")
         try:
-            resource = config['jabberchat.resource']
+            resource = config['jabber.resource']
             if resource == "": raise KeyError
         except KeyError: resource = raw_input("Jabber Resource: ")
         self._jid = "%s@%s/%s" % (username,server,resource)
         try:
-            nickname = config['jabberchat.nickname']
+            nickname = config['jabber.nickname']
             if nickname == "": raise KeyError
         except KeyError: nickname = raw_input("Jabber Nickname for %s: " % self._jid)
         
@@ -61,36 +61,38 @@ class FrontEndJabber(frontend.IFrontEnd):
         except KeyError: self._maxdelay = 0
 
         # Connect to server through SSL
-        self._con = jabber.Client(host=server, port=5223,
-                                        connection=jabber.xmlstream.TCP_SSL)
-        try:
-            self._con.connect()
-        except IOError, e:
+        self._con = xmpp.Client(server, port=5223, debug=None)
+        if not self._con.connect(server=(server,5223)):
             sys.stderr.write("JABBER: Couldn't connect to %s: %s\n" % (server,e))
             return
+
         # Register event handlers
-        self._con.registerHandler('message',self._messageCB)
-        self._con.registerHandler('presence',self._presenceCB)
-        self._con.registerHandler('iq',self._iqCB)
-        self._con.setDisconnectHandler(self._disconnectedCB)
+        self._con.RegisterHandler('message',self._messageCB)
+        self._con.RegisterHandler('presence',self._presenceCB)
+        self._con.RegisterHandler('iq',self._iqCB)
+        
         # Log in
         if self._con.auth(username,password,resource):
             pass
         else:
             print "JABBER ERROR: login failed:", self._con.lastErr, self._con.lastErrCode
             return
+
         # Request roster
-        self._con.requestRoster()
-        self._con.sendInitPresence()
+        self._con.sendInitPresence(1)
+
         
     def go(self):
         while True:
             time.sleep(1)
-            self._con.process(1)
+            self._con.Process(1)
+            # If connection is broken, restore it
+            if not self._con.isConnected(): self._con.reconnectAndReauth()
+
 
     def display(self, output, user):
         # "user" must be a legitimate JID (user@server)
-        msg = jabber.Message(user, output.strip())
+        msg = xmpp.Message(user, output.strip())
         msg.setType('chat')
         self._con.send(msg)
 
@@ -121,16 +123,16 @@ class FrontEndJabber(frontend.IFrontEnd):
         # - send request for subscription to their presence
         if type == 'subscribe':
             #print u"subscribe request from %s" % (who)
-            con.send(jabber.Presence(to=who, type='subscribed'))
-            con.send(jabber.Presence(to=who, type='subscribe'))
+            con.send(xmpp.Presence(to=who, typ='subscribed'))
+            con.send(xmpp.Presence(to=who, typ='subscribe'))
 
         # unsubscription request: 
         # - accept their unsubscription
         # - send request for unsubscription to their presence
         elif type == 'unsubscribe':
             #print u"unsubscribe request from %s" % (who)
-            con.send(jabber.Presence(to=who, type='unsubscribed'))
-            con.send(jabber.Presence(to=who, type='unsubscribe'))
+            con.send(xmpp.Presence(to=who, typ='unsubscribed'))
+            con.send(xmpp.Presence(to=who, typ='unsubscribe'))
 
         #elif type == 'subscribed':
         #    print u"we are now subscribed to %s" % (who)
@@ -145,7 +147,4 @@ class FrontEndJabber(frontend.IFrontEnd):
 
     def _iqCB(self, con,iq):
         """Called when an iq is recieved, we just let the library handle it at the moment"""
-        pass
-
-    def _disconnectedCB(self, con):
         pass
