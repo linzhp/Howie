@@ -34,7 +34,7 @@ he should work on any system that meets the following requirements:
  - Python 2.2.x or greater.
  - 64 MB available RAM (depending on the AIML set you're using)
  - Dedicated Internet connection
- - The Twisted framework (http://twistedmatrix.com/products/twisted).
+ - The Twisted framework, version 2.2.0 or later (http://twistedmatrix.com/products/twisted).
    You must have Twisted installed in order to run Howie from the source.
    NOTE: The Windows binary distribution already includes Twisted.
 
