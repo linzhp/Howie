@@ -2,7 +2,8 @@
    a control-C.
  - Upgraded to PyAIML version 0.8.5.  This version includes standards-compliant
    whitespace handling, and fixes a handful of Unicode and crash bugs.
- - JABBER: Upgraded to xmpppy 0.2pre2.
+ - AIM/ICQ: Updated for compatibility with Twisted 2.2.0 (removed some deprecation warnings).
+ - JABBER: Upgraded to xmpppy 0.3.1.
  - JABBER: Removed hard-coded port number, and put it in howie.ini instead.
 
 0.6.0:
