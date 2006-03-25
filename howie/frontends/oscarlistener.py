@@ -5,9 +5,9 @@ used by AIM and ICQ.
 import getpass
 import random
 import time
-from twisted.internet import default
+from twisted.internet import selectreactor
 #default.install()
-from twisted.protocols import oscar
+from twisted.words.protocols import oscar
 from twisted.internet import protocol, reactor
 
 import howie.configFile
