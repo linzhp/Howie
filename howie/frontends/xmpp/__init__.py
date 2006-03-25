@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2005/01/10 19:00:24 cort Exp $
+# $Id: __init__.py,v 1.6 2006/03/25 16:45:38 cort Exp $
 
 """
 All features of xmpppy library contained within separate modules.
@@ -26,6 +26,6 @@ and use only methods for access all values you should not have any problems.
 
 """
 
-import simplexml,protocol,debug,auth,transports,roster,dispatcher,features,browser,filetransfer
+import simplexml,protocol,debug,auth,transports,roster,dispatcher,features,browser,filetransfer,commands
 from client import *
 from protocol import *

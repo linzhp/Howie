@@ -1,6 +1,6 @@
 ##   simplexml.py based on Mattew Allum's xmlstream.py
 ##
-##   Copyright (C) 2003-2004 Alexey "Snake" Nezhdanov
+##   Copyright (C) 2003-2005 Alexey "Snake" Nezhdanov
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: simplexml.py,v 1.5 2005/01/10 19:00:28 cort Exp $
+# $Id: simplexml.py,v 1.6 2006/03/25 16:45:38 cort Exp $
 
 """Simplexml module provides xmpppy library with all needed tools to handle XML nodes and XML streams.
 I'm personally using it in many other separate projects. It is designed to be as standalone as possible."""
@@ -75,16 +75,13 @@ class Node:
         for i in payload:
             if type(i)==type(self): self.addChild(node=i)
             else: self.data.append(ustr(i))
-        self.T=T(self)
-        self.NT=NT(self)
 
-    def __str__(self,parent=None,fancy=0):
+    def __str__(self,fancy=0):
+        """ Method used to dump node into textual representation.
+            if "fancy" argument is set to True produces indented output for readability."""
         s = (fancy-1) * 2 * ' ' + "<" + self.name
-        """ Method used to dump node into textual representation. "parent" argument used internally
-            to track namespaces within a tree. "fancy" argument, if set to True value forces
-            indentation usage for readability."""
         if self.namespace:
-            if parent and parent.namespace!=self.namespace:
+            if not self.parent or self.parent.namespace!=self.namespace:
                 s = s + ' xmlns="%s"'%self.namespace
         for key in self.attrs.keys():
             val = ustr(self.attrs[key])
@@ -96,8 +93,7 @@ class Node:
             for a in self.kids:
                 if not fancy and (len(self.data)-1)>=cnt: s=s+XMLescape(self.data[cnt])
                 elif (len(self.data)-1)>=cnt: s=s+XMLescape(self.data[cnt].strip())
-                if fancy: s = s + a.__str__(self,fancy=fancy+1)
-                else: s = s + a.__str__(self)
+                s = s + a.__str__(fancy and fancy+1)
                 cnt=cnt+1
         if not fancy and (len(self.data)-1) >= cnt: s = s + XMLescape(self.data[cnt])
         elif (len(self.data)-1) >= cnt: s = s + XMLescape(self.data[cnt].strip())
@@ -242,11 +238,20 @@ class Node:
     def __delitem__(self,item):
         """ Deletes node's attribute "item". """
         return self.delAttr(item,val)
+    def __getattr__(self,attr):
+        """ Reduce memory usage caused by T/NT classes - use memory only when needed. """
+        if attr=='T':
+            self.T=T(self)
+            return self.T
+        if attr=='NT':
+            self.NT=NT(self)
+            return self.NT
+        raise AttributeError
 
 class T:
-    """ Auxiliary class used to quick acces to node's child nodes. """
+    """ Auxiliary class used to quick access to node's child nodes. """
     def __init__(self,node): self.__dict__['node']=node
-    def __getattr__(self,attr): return self.node.setTag(attr)
+    def __getattr__(self,attr): return self.node.getTag(attr)
     def __setattr__(self,attr,val):
         if isinstance(val,Node): Node.__init__(self.node.setTag(attr),node=val)
         else: return self.node.setTagData(attr,val)

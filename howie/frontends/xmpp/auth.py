@@ -1,6 +1,6 @@
 ##   auth.py
 ##
-##   Copyright (C) 2003-2004 Alexey "Snake" Nezhdanov
+##   Copyright (C) 2003-2005 Alexey "Snake" Nezhdanov
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: auth.py,v 1.5 2005/01/10 19:00:25 cort Exp $
+# $Id: auth.py,v 1.6 2006/03/25 16:45:38 cort Exp $
 
 """
 Provides library with all Non-SASL and SASL authentication mechanisms.
@@ -55,6 +55,7 @@ class NonSASL(PlugIn):
         if query.getTag('digest'):
             self.DEBUG("Performing digest authentication",'ok')
             query.setTagData('digest',sha.new(owner.Dispatcher.Stream._document_attrs['id']+self.password).hexdigest())
+            if query.getTag('password'): query.delChild('password')
             method='digest'
         elif query.getTag('token'):
             token=query.getTagData('token')
@@ -80,7 +81,7 @@ class NonSASL(PlugIn):
     def authComponent(self,owner):
         """ Authenticate component. Send handshake stanza and wait for result. Returns "ok" on success. """
         self.handshake=0
-        owner.send(Protocol('handshake',payload=[sha.new(owner.Dispatcher.Stream._document_attrs['id']+self.password).hexdigest()]))
+        owner.send(Node(NS_COMPONENT_ACCEPT+' handshake',payload=[sha.new(owner.Dispatcher.Stream._document_attrs['id']+self.password).hexdigest()]))
         owner.RegisterHandler('handshake',self.handshakeHandler,xmlns=NS_COMPONENT_ACCEPT)
         while not self.handshake:
             self.DEBUG("waiting on handshake",'notify')
@@ -95,16 +96,24 @@ class NonSASL(PlugIn):
 
 class SASL(PlugIn):
     """ Implements SASL authentication. """
-    def plugin(self,owner):
-        self.startsasl=None
+    def __init__(self,username,password):
+        PlugIn.__init__(self)
+        self.username=username
+        self.password=password
 
-    def auth(self,username,password):
+    def plugin(self,owner):
+        if not self._owner.Dispatcher.Stream._document_attrs.has_key('version'): self.startsasl='not-supported'
+        elif self._owner.Dispatcher.Stream.features:
+            try: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
+            except NodeProcessed: pass
+        else: self.startsasl=None
+
+    def auth(self):
         """ Start authentication. Result can be obtained via "SASL.startsasl" attribute and will be
             either "success" or "failure". Note that successfull auth will take at least
             two Dispatcher.Process() calls. """
-        self.username=username
-        self.password=password
-        if self._owner.Dispatcher.Stream.features:
+        if self.startsasl: pass
+        elif self._owner.Dispatcher.Stream.features:
             try: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
             except NodeProcessed: pass
         else: self._owner.RegisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
@@ -119,7 +128,7 @@ class SASL(PlugIn):
     def FeaturesHandler(self,conn,feats):
         """ Used to determine if server supports SASL auth. Used internally. """
         if not feats.getTag('mechanisms',namespace=NS_SASL):
-            self.startsasl='failure'
+            self.startsasl='not-supported'
             self.DEBUG('SASL not supported by server','error')
             return
         mecs=[]
@@ -153,8 +162,10 @@ class SASL(PlugIn):
         elif challenge.getName()=='success':
             self.startsasl='success'
             self.DEBUG('Successfully authenticated with remote server.','ok')
+            handlers=self._owner.Dispatcher.dumpHandlers()
             self._owner.Dispatcher.PlugOut()
             dispatcher.Dispatcher().PlugIn(self._owner)
+            self._owner.Dispatcher.restoreHandlers(handlers)
             self._owner.User=self.username
             raise NodeProcessed
 ########################################3333
@@ -163,7 +174,7 @@ class SASL(PlugIn):
         data=base64.decodestring(incoming_data)
         self.DEBUG('Got challenge:'+data,'ok')
         for pair in data.split(','):
-            key,value=pair.split('=')
+            key,value=pair.split('=', 1)
             if value[:1]=='"' and value[-1:]=='"': value=value[1:-1]
             chal[key]=value
         if chal.has_key('qop') and chal['qop']=='auth':
@@ -177,7 +188,7 @@ class SASL(PlugIn):
             resp['cnonce']=cnonce
             resp['nc']=('00000001')
             resp['qop']='auth'
-            resp['digest-uri']='xmpp/'
+            resp['digest-uri']='xmpp/'+self._owner.Server
             A1=C([H(C([resp['username'],resp['realm'],self.password])),resp['nonce'],resp['cnonce']])
             A2=C(['AUTHENTICATE',resp['digest-uri']])
             response= HH(C([HH(A1),resp['nonce'],resp['nc'],resp['cnonce'],resp['qop'],HH(A2)]))
@@ -188,7 +199,7 @@ class SASL(PlugIn):
                 if key in ['nc','qop','response','charset']: sasl_data+="%s=%s,"%(key,resp[key])
                 else: sasl_data+='%s="%s",'%(key,resp[key])
 ########################################3333
-            node=Node('response',attrs={'xmlns':NS_SASL},payload=[base64.encodestring(sasl_data[:-1]).replace('\n','')])
+            node=Node('response',attrs={'xmlns':NS_SASL},payload=[base64.encodestring(sasl_data[:-1]).replace('\r','').replace('\n','')])
             self._owner.send(node.__str__())
         elif chal.has_key('rspauth'): self._owner.send(Node('response',attrs={'xmlns':NS_SASL}).__str__())
         else: 
@@ -210,7 +221,7 @@ class Bind(PlugIn):
             except NodeProcessed: pass
         else: self._owner.RegisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
 
-    def plugout(self,owner):
+    def plugout(self):
         """ Remove Bind handler from owner's dispatcher. Used internally. """
         self._owner.UnregisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
 
@@ -245,6 +256,51 @@ class Bind(PlugIn):
                 self.DEBUG('Session open failed.','error')
                 self.session=0
         elif resp: self.DEBUG('Binding failed: %s.'%resp.getTag('error'),'error')
+        else:
+            self.DEBUG('Binding failed: timeout expired.','error')
+            return ''
+
+class ComponentBind(PlugIn):
+    """ ComponentBind some JID to the current connection to allow router know of our location."""
+    def __init__(self):
+        PlugIn.__init__(self)
+        self.DBG_LINE='bind'
+        self.bound=None
+        self.needsUnregister=None
+
+    def plugin(self,owner):
+        """ Start resource binding, if allowed at this time. Used internally. """
+        if self._owner.Dispatcher.Stream.features:
+            try: self.FeaturesHandler(self._owner.Dispatcher,self._owner.Dispatcher.Stream.features)
+            except NodeProcessed: pass
+        else:
+            self._owner.RegisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
+            self.needsUnregister=1
+
+    def plugout(self):
+        """ Remove ComponentBind handler from owner's dispatcher. Used internally. """
+        if self.needsUnregister:
+            self._owner.UnregisterHandler('features',self.FeaturesHandler,xmlns=NS_STREAMS)
+
+    def FeaturesHandler(self,conn,feats):
+        """ Determine if server supports resource binding and set some internal attributes accordingly. """
+        if not feats.getTag('bind',namespace=NS_BIND):
+            self.bound='failure'
+            self.DEBUG('Server does not requested binding.','error')
+            return
+        if feats.getTag('session',namespace=NS_SESSION): self.session=1
+        else: self.session=-1
+        self.bound=[]
+
+    def Bind(self,domain=None):
+        """ Perform binding. Use provided domain name (if not provided). """
+        while self.bound is None and self._owner.Process(1): pass
+        resp=self._owner.SendAndWaitForResponse(Protocol('bind',attrs={'name':domain},xmlns=NS_COMPONENT_1))
+        if resp and resp.getAttr('error'):
+            self.DEBUG('Binding failed: %s.'%resp.getAttr('error'),'error')
+        elif resp:
+            self.DEBUG('Successfully bound.','ok')
+            return 'ok'
         else:
             self.DEBUG('Binding failed: timeout expired.','error')
             return ''

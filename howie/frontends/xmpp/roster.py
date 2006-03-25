@@ -1,6 +1,6 @@
 ##   roster.py
 ##
-##   Copyright (C) 2003-2004 Alexey "Snake" Nezhdanov
+##   Copyright (C) 2003-2005 Alexey "Snake" Nezhdanov
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: roster.py,v 1.5 2005/01/10 19:00:27 cort Exp $
+# $Id: roster.py,v 1.6 2006/03/25 16:45:38 cort Exp $
 
 """
 Simple roster implementation. Can be used though for different tasks like
@@ -68,7 +68,7 @@ class Roster(PlugIn):
             jid=item.getAttr('jid')
             if item.getAttr('subscription')=='remove':
                 if self._data.has_key(jid): del self._data[jid]
-                raise NodeProcessed
+                raise NodeProcessed             # a MUST
             self.DEBUG('Setting roster item %s...'%jid,'ok')
             if not self._data.has_key(jid): self._data[jid]={}
             self._data[jid]['name']=item.getAttr('name')
@@ -79,7 +79,7 @@ class Roster(PlugIn):
             for group in item.getTags('group'): self._data[jid]['groups'].append(group.getData())
         self._data[self._owner.User+'@'+self._owner.Server]={'resources':{},'name':None,'ask':None,'subscription':None,'groups':None,}
         self.set=1
-        raise NodeProcessed
+        raise NodeProcessed   # a MUST. Otherwise you'll get back an <iq type='error'/>
 
     def PresenceHandler(self,dis,pres):
         """ Presence tracker. Used internally for setting items' resources state in
@@ -91,17 +91,15 @@ class Roster(PlugIn):
         typ=pres.getType()
 
         if not typ:
-            if not item['resources'].has_key(jid.getResource()): item['resources'][jid.getResource()]={'show':None,'status':None,'priority':'0','timestamp':None}
             self.DEBUG('Setting roster item %s for resource %s...'%(jid.getStripped(),jid.getResource()),'ok')
-            res=item['resources'][jid.getResource()]
+            item['resources'][jid.getResource()]=res={'show':None,'status':None,'priority':'0','timestamp':None}
             if pres.getTag('show'): res['show']=pres.getShow()
             if pres.getTag('status'): res['status']=pres.getStatus()
             if pres.getTag('priority'): res['priority']=pres.getPriority()
             if not pres.getTimestamp(): pres.setTimestamp()
             res['timestamp']=pres.getTimestamp()
         elif typ=='unavailable' and item['resources'].has_key(jid.getResource()): del item['resources'][jid.getResource()]
-        raise NodeProcessed
-# Need to handle type='error' also
+        # Need to handle type='error' also
 
     def _getItemData(self,jid,dataname):
         """ Return specific jid's representation in internal format. Used internally. """
@@ -151,7 +149,7 @@ class Roster(PlugIn):
         """ Returns list of connected resources of contact 'jid'."""
         return self._data[jid[:(jid+'/').find('/')]]['resources'].keys()
     def setItem(self,jid,name=None,groups=[]):
-        """ Renames contact 'jid' and sets the groups list that it now belongs to."""
+        """ Creates/renames contact 'jid' and sets the groups list that it now belongs to."""
         iq=Iq('set',NS_ROSTER)
         query=iq.getTag('query')
         attrs={'jid':jid}

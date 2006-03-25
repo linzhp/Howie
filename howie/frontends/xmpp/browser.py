@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: browser.py,v 1.2 2005/01/10 19:00:25 cort Exp $
+# $Id: browser.py,v 1.3 2006/03/25 16:45:38 cort Exp $
 
 """Browser module provides DISCO server framework for your application.
 This functionality can be used for very different purposes - from publishing
@@ -27,7 +27,9 @@ from dispatcher import *
 from client import PlugIn
 
 class Browser(PlugIn):
-    """ Standart xmpppy class that is ancestor of PlugIn and can be attached
+    """ WARNING! This class is for components only. It will not work in client mode!
+
+        Standart xmpppy class that is ancestor of PlugIn and can be attached
         to your application.
         All processing will be performed in the handlers registered in the browser
         instance. You can register any number of handlers ensuring that for each
@@ -85,14 +87,14 @@ class Browser(PlugIn):
     def plugin(self, owner):
         """ Registers it's own iq handlers in your application dispatcher instance.
             Used internally."""
-        owner.RegisterHandler('iq',self._DiscoveryHandler,ns=NS_DISCO_INFO)
-        owner.RegisterHandler('iq',self._DiscoveryHandler,ns=NS_DISCO_ITEMS)
+        owner.RegisterHandler('iq',self._DiscoveryHandler,typ='get',ns=NS_DISCO_INFO)
+        owner.RegisterHandler('iq',self._DiscoveryHandler,typ='get',ns=NS_DISCO_ITEMS)
 
     def plugout(self):
         """ Unregisters browser's iq handlers from your application dispatcher instance.
             Used internally."""
-        self._owner.UnregisterHandler('iq',self._DiscoveryHandler,ns=NS_DISCO_INFO)
-        self._owner.UnregisterHandler('iq',self._DiscoveryHandler,ns=NS_DISCO_ITEMS)
+        self._owner.UnregisterHandler('iq',self._DiscoveryHandler,typ='get',ns=NS_DISCO_INFO)
+        self._owner.UnregisterHandler('iq',self._DiscoveryHandler,typ='get',ns=NS_DISCO_ITEMS)
 
     def _traversePath(self,node,jid,set=0):
         """ Returns dictionary and key or None,None
@@ -136,7 +138,7 @@ class Browser(PlugIn):
                           {'jid':'jid2','action':'action2','node':'node2','name':'name2'},
                           {'jid':'jid3','node':'node3','name':'name3'},
                           {'jid':'jid4','node':'node4'}
-                        ]
+                        ],
                 'info' :{
                           'ids':[
                                   {'category':'category1','type':'type1','name':'name1'},
@@ -155,6 +157,7 @@ class Browser(PlugIn):
                 # elif TYR=='info': # returns info dictionary of the same format as shown above
                 # else: # this case is impossible for now.
         """
+        self.DEBUG('Registering handler %s for "%s" node->%s'%(handler,jid,node), 'info')
         node,key=self._traversePath(node,jid,1)
         node[key]=handler
 
@@ -182,17 +185,28 @@ class Browser(PlugIn):
             to handle the request. Used internally.
         """
         handler=self.getDiscoHandler(request.getQuerynode(),request.getTo())
-        if not handler: return conn.send(Error(request,ERR_ITEM_NOT_FOUND))
+        if not handler:
+            self.DEBUG("No Handler for request with jid->%s node->%s ns->%s"%(request.getTo(),request.getQuerynode(),request.getQueryNS()),'error')
+            conn.send(Error(request,ERR_ITEM_NOT_FOUND))
+            raise NodeProcessed
+        self.DEBUG("Handling request with jid->%s node->%s ns->%s"%(request.getTo(),request.getQuerynode(),request.getQueryNS()),'ok')
         rep=request.buildReply('result')
+        if request.getQuerynode(): rep.setQuerynode(request.getQuerynode())
         q=rep.getTag('query')
         if request.getQueryNS()==NS_DISCO_ITEMS:
             # handler must return list: [{jid,action,node,name}]
             if type(handler)==dict: lst=handler['items']
             else: lst=handler(conn,request,'items')
+            if lst==None:
+                conn.send(Error(request,ERR_ITEM_NOT_FOUND))
+                raise NodeProcessed
             for item in lst: q.addChild('item',item)
         elif request.getQueryNS()==NS_DISCO_INFO:
             if type(handler)==dict: dt=handler['info']
             else: dt=handler(conn,request,'info')
+            if dt==None:
+                conn.send(Error(request,ERR_ITEM_NOT_FOUND))
+                raise NodeProcessed
             # handler must return dictionary:
             # {'ids':[{},{},{},{}], 'features':[fe,at,ur,es], 'xdata':DataForm}
             for id in dt['ids']: q.addChild('identity',id)

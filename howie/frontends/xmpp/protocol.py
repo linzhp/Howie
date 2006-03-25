@@ -1,6 +1,6 @@
 ##   protocol.py 
 ##
-##   Copyright (C) 2003-2004 Alexey "Snake" Nezhdanov
+##   Copyright (C) 2003-2005 Alexey "Snake" Nezhdanov
 ##
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
 
-# $Id: protocol.py,v 1.5 2005/01/10 19:00:27 cort Exp $
+# $Id: protocol.py,v 1.6 2006/03/25 16:45:38 cort Exp $
 
 """
 Protocol module contains tools that is needed for processing of 
@@ -21,36 +21,62 @@ xmpp-related data structures.
 
 from simplexml import Node,ustr
 import time
-
+NS_ACTIVITY     ='http://jabber.org/protocol/activity'                  # JEP-0108
+NS_ADDRESS      ='http://jabber.org/protocol/address'                   # JEP-0033
 NS_AGENTS       ='jabber:iq:agents'
 NS_AMP          ='http://jabber.org/protocol/amp'
+NS_AMP_ERRORS   =NS_AMP+'#errors'
 NS_AUTH         ='jabber:iq:auth'
 NS_BIND         ='urn:ietf:params:xml:ns:xmpp-bind'
 NS_BROWSE       ='jabber:iq:browse'
+NS_BYTESTREAM   ='http://jabber.org/protocol/bytestreams'               # JEP-0065
+NS_CAPS         ='http://jabber.org/protocol/caps'                      # JEP-0115
+NS_CHATSTATES   ='http://jabber.org/protocol/chatstates'                # JEP-0085
 NS_CLIENT       ='jabber:client'
+NS_COMMANDS     ='http://jabber.org/protocol/commands'
 NS_COMPONENT_ACCEPT='jabber:component:accept'
-NS_DATA         ='jabber:x:data'                                # JEP-0004
+NS_COMPONENT_1  ='http://jabberd.jabberstudio.org/ns/component/1.0'
+NS_COMPRESS     ='http://jabber.org/protocol/compress'                  # JEP-0138
+NS_DATA         ='jabber:x:data'                                        # JEP-0004
 NS_DELAY        ='jabber:x:delay'
 NS_DIALBACK     ='jabber:server:dialback'
-NS_DISCO_INFO   ='http://jabber.org/protocol/disco#info'
-NS_DISCO_ITEMS  ='http://jabber.org/protocol/disco#items'
+NS_DISCO        ='http://jabber.org/protocol/disco'
+NS_DISCO_INFO   =NS_DISCO+'#info'
+NS_DISCO_ITEMS  =NS_DISCO+'#items'
+NS_ENCRYPTED    ='jabber:x:encrypted'                                   # JEP-0027
+NS_EVENT        ='jabber:x:event'                                       # JEP-0022
+NS_FEATURE      ='http://jabber.org/protocol/feature-neg'  
+NS_FILE         ='http://jabber.org/protocol/si/profile/file-transfer'  # JEP-0096
+NS_GEOLOC       ='http://jabber.org/protocol/geoloc'                    # JEP-0080
 NS_GROUPCHAT    ='gc-1.0'
+NS_HTTP_BIND    ='http://jabber.org/protocol/httpbind'                  # JEP-0124
 NS_IBB          ='http://jabber.org/protocol/ibb'
-NS_INVISIBLE    ='presence-invisible'                           # jabberd2
-NS_IQ           ='iq'                                           # jabberd2
+NS_INVISIBLE    ='presence-invisible'                                   # Jabberd2
+NS_IQ           ='iq'                                                   # Jabberd2
 NS_LAST         ='jabber:iq:last'
-NS_MESSAGE      ='message'                                      # jabberd2
-NS_OFFLINE      ='http://www.jabber.org/jeps/jep-0030.html'     # JEP-0013   
-NS_PRESENCE     ='presence'                                     # jabberd2
+NS_MESSAGE      ='message'                                              # Jabberd2
+NS_MOOD         ='http://jabber.org/protocol/mood'                      # JEP-0107
+NS_MUC          ='http://jabber.org/protocol/muc'
+NS_MUC_USER     =NS_MUC+'#user'
+NS_MUC_ADMIN    =NS_MUC+'#admin'
+NS_MUC_OWNER    =NS_MUC+'#owner'
+NS_OFFLINE      ='http://www.jabber.org/jeps/jep-0030.html'             # JEP-0013
+NS_PHYSLOC      ='http://jabber.org/protocol/physloc'                   # JEP-0112
+NS_PRESENCE     ='presence'                                             # Jabberd2
 NS_PRIVACY      ='jabber:iq:privacy'
 NS_PRIVATE      ='jabber:iq:private'
+NS_PUBSUB       ='http://jabber.org/protocol/pubsub'                    # JEP-0060
 NS_REGISTER     ='jabber:iq:register'
 NS_ROSTER       ='jabber:iq:roster'
-NS_RPC          ='jabber:iq:rpc'                                # JEP-0009
+NS_ROSTERX      ='http://jabber.org/protocol/rosterx'                   # JEP-0144
+NS_RPC          ='jabber:iq:rpc'                                        # JEP-0009
 NS_SASL         ='urn:ietf:params:xml:ns:xmpp-sasl'
 NS_SEARCH       ='jabber:iq:search'
 NS_SERVER       ='jabber:server'
 NS_SESSION      ='urn:ietf:params:xml:ns:xmpp-session'
+NS_SI           ='http://jabber.org/protocol/si'                        # JEP-0096
+NS_SI_PUB       ='http://jabber.org/protocol/sipub'                     # JEP-0137
+NS_SIGNED       ='jabber:x:signed'                                      # JEP-0027
 NS_STANZAS      ='urn:ietf:params:xml:ns:xmpp-stanzas'
 NS_STREAMS      ='http://etherx.jabber.org/streams'
 NS_TIME         ='jabber:iq:time'
@@ -58,6 +84,10 @@ NS_TLS          ='urn:ietf:params:xml:ns:xmpp-tls'
 NS_VACATION     ='http://jabber.org/protocol/vacation'
 NS_VCARD        ='vcard-temp'
 NS_VERSION      ='jabber:iq:version'
+NS_WAITINGLIST  ='http://jabber.org/protocol/waitinglist'               # JEP-0130
+NS_XHTML_IM     ='http://jabber.org/protocol/xhtml-im'                  # JEP-0071
+NS_DATA_LAYOUT  ='http://jabber.org/protocol/xdata-layout'              # JEP-0141
+NS_DATA_VALIDATE='http://jabber.org/protocol/xdata-validate'            # JEP-0122
 NS_XMPP_STREAMS ='urn:ietf:params:xml:ns:xmpp-streams'
 
 xmpp_stream_error_conditions="""
@@ -135,8 +165,60 @@ def isResultNode(node):
 def isErrorNode(node):
     """ Returns true if the node is a negative reply. """
     return node and node.getType()=='error'
+
 class NodeProcessed(Exception):
     """ Exception that should be raised by handler when the handling should be stopped. """
+class StreamError(Exception):
+    """ Base exception class for stream errors."""
+class BadFormat(StreamError): pass
+class BadNamespacePrefix(StreamError): pass
+class Conflict(StreamError): pass
+class ConnectionTimeout(StreamError): pass
+class HostGone(StreamError): pass
+class HostUnknown(StreamError): pass
+class ImproperAddressing(StreamError): pass
+class InternalServerError(StreamError): pass
+class InvalidFrom(StreamError): pass
+class InvalidID(StreamError): pass
+class InvalidNamespace(StreamError): pass
+class InvalidXML(StreamError): pass
+class NotAuthorized(StreamError): pass
+class PolicyViolation(StreamError): pass
+class RemoteConnectionFailed(StreamError): pass
+class ResourceConstraint(StreamError): pass
+class RestrictedXML(StreamError): pass
+class SeeOtherHost(StreamError): pass
+class SystemShutdown(StreamError): pass
+class UndefinedCondition(StreamError): pass
+class UnsupportedEncoding(StreamError): pass
+class UnsupportedStanzaType(StreamError): pass
+class UnsupportedVersion(StreamError): pass
+class XMLNotWellFormed(StreamError): pass
+
+stream_exceptions = {'bad-format': BadFormat,
+                     'bad-namespace-prefix': BadNamespacePrefix,
+                     'conflict': Conflict,
+                     'connection-timeout': ConnectionTimeout,
+                     'host-gone': HostGone,
+                     'host-unknown': HostUnknown,
+                     'improper-addressing': ImproperAddressing,
+                     'internal-server-error': InternalServerError,
+                     'invalid-from': InvalidFrom,
+                     'invalid-id': InvalidID,
+                     'invalid-namespace': InvalidNamespace,
+                     'invalid-xml': InvalidXML,
+                     'not-authorized': NotAuthorized,
+                     'policy-violation': PolicyViolation,
+                     'remote-connection-failed': RemoteConnectionFailed,
+                     'resource-constraint': ResourceConstraint,
+                     'restricted-xml': RestrictedXML,
+                     'see-other-host': SeeOtherHost,
+                     'system-shutdown': SystemShutdown,
+                     'undefined-condition': UndefinedCondition,
+                     'unsupported-encoding': UnsupportedEncoding,
+                     'unsupported-stanza-type': UnsupportedStanzaType,
+                     'unsupported-version': UnsupportedVersion,
+                     'xml-not-well-formed': XMLNotWellFormed}
 
 class JID:
     """ JID object. JID can be built from string, modified, compared, serialised into string. """
@@ -198,7 +280,7 @@ class JID:
 
 class Protocol(Node):
     """ A "stanza" object class. Contains methods that are common for presences, iqs and messages. """
-    def __init__(self, name=None, to=None, typ=None, frm=None, attrs={}, payload=[], timestamp=None, xmlns=NS_CLIENT, node=None):
+    def __init__(self, name=None, to=None, typ=None, frm=None, attrs={}, payload=[], timestamp=None, xmlns=None, node=None):
         """ Constructor, name is the name of the stanza i.e. 'message' or 'presence' or 'iq'.
             to is the value of 'to' attribure, 'typ' - 'type' attribute
             frn - from attribure, attrs - other attributes mapping, payload - same meaning as for simplexml payload definition
@@ -211,14 +293,14 @@ class Protocol(Node):
         if frm: attrs['from']=frm
         if typ: attrs['type']=typ
         Node.__init__(self, tag=name, attrs=attrs, payload=payload, node=node)
-        if not node: self.setNamespace(xmlns)
+        if not node and xmlns: self.setNamespace(xmlns)
         if self['to']: self.setTo(self['to'])
         if self['from']: self.setFrom(self['from'])
         if node and type(self)==type(node) and self.__class__==node.__class__ and self.attrs.has_key('id'): del self.attrs['id']
         self.timestamp=None
         for x in self.getTags('x',namespace=NS_DELAY):
             try:
-                if x.getAttr('stamp')>self.getTimestamp(): self.setTimestamp(x.getAttr('stamp'))
+                if not self.getTimestamp() or x.getAttr('stamp')<self.getTimestamp(): self.setTimestamp(x.getAttr('stamp'))
             except: pass
         if timestamp is not None: self.setTimestamp(timestamp)  # To auto-timestamp stanza just pass timestamp=''
     def getTo(self):
@@ -315,7 +397,7 @@ class Message(Protocol):
     def buildReply(self,text=None):
         """ Builds and returns another message object with specified text.
             The to, from and thread properties of new message are pre-set as reply to this message. """
-        m=Message(to=self.getFrom(),frm=self.getTo(),body=text,node=self)
+        m=Message(to=self.getFrom(),frm=self.getTo(),body=text)
         th=self.getThread()
         if th: m.setThread(th)
         return m
@@ -348,6 +430,38 @@ class Presence(Protocol):
     def setStatus(self,val):
         """ Sets the status string of the message. """
         self.setTagData('status',val)
+
+    def _muc_getItemAttr(self,tag,attr):
+        for xtag in self.getTags('x'):
+            for child in xtag.getTags(tag):
+                return child.getAttr(attr)
+    def _muc_getSubTagDataAttr(self,tag,attr):
+        for xtag in self.getTags('x'):
+            for child in xtag.getTags('item'):
+                for cchild in child.getTags(tag):
+                    return cchild.getData(),cchild.getAttr(attr)
+        return None,None
+    def getRole(self):
+        """Returns the presence role (for groupchat)"""
+        return self._muc_getItemAttr('item','role')
+    def getAffiliation(self):
+        """Returns the presence affiliation (for groupchat)"""
+        return self._muc_getItemAttr('item','affiliation')
+    def getNick(self):
+        """Returns the nick value (for nick change in groupchat)"""
+        return self._muc_getItemAttr('item','nick')
+    def getJid(self):
+        """Returns the presence jid (for groupchat)"""
+        return self._muc_getItemAttr('item','jid')
+    def getReason(self):
+        """Returns the reason of the presence (for groupchat)"""
+        return self._muc_getSubTagDataAttr('reason','')[0]
+    def getActor(self):
+        """Returns the reason of the presence (for groupchat)"""
+        return self._muc_getSubTagDataAttr('actor','jid')[1]
+    def getStatusCode(self):
+        """Returns the status code of the presence (for groupchat)"""
+        return self._muc_getItemAttr('status','code')
 
 class Iq(Protocol): 
     """ XMPP Iq object - get/set dialog mechanism. """
@@ -574,11 +688,12 @@ class DataForm(Node):
         for field in self.getTags('field'):
             name=field.getAttr('var')
             typ=field.getType()
-            if type(typ) in [type(''),type(u'')] and typ[-6:]=='multi':
+            if isinstance(typ,(str,unicode)) and typ[-6:]=='-multi':
                 val=[]
                 for i in field.getTags('value'): val.append(i.getData())
             else: val=field.getTagData('value')
             ret[name]=val
+        if self.getTag('instructions'): ret['instructions']=self.getInstructions()
         return ret
     def __getitem__(self,name):
         """ Simple dictionary interface for getting datafields values by their names."""
