@@ -1,10 +1,5 @@
 import marshal
-import os
 import os.path
-import pyclbr
-import random
-import re
-import string
 import sys
 import threading
 import time
